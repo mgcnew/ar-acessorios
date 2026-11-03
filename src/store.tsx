@@ -1,6 +1,7 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
-import type { CategoryId } from './data/catalog';
 
 export interface CartLine {
   key: string;
@@ -8,17 +9,6 @@ export interface CartLine {
   vkey: string;
   qty: number;
 }
-
-export type SortKey = 'rel' | 'new' | 'asc' | 'desc' | 'az';
-
-export interface CatalogFilters {
-  cat: CategoryId | 'all';
-  q: string;
-  sort: SortKey;
-  onlyAvail: boolean;
-}
-
-export const DEFAULT_FILTERS: CatalogFilters = { cat: 'all', q: '', sort: 'rel', onlyAvail: false };
 
 export const MAX_QTY = 10;
 const DATA_KEY = 'ar_demo_v1';
@@ -33,33 +23,38 @@ function readJSON<T>(key: string, fallback: T): T {
   }
 }
 
-function initialDark(): boolean {
+function write(key: string, value: string) {
   try {
-    const t = window.localStorage.getItem(THEME_KEY);
-    if (t) return t === 'dark';
-    const host = document.documentElement.dataset.theme;
-    if (host === 'dark' || host === 'light') return host === 'dark';
-    return !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+    window.localStorage.setItem(key, value);
   } catch {
-    return false;
+    /* armazenamento indisponível (aba anônima, bloqueio do navegador) */
   }
 }
 
-/** Tema claro/noturno compartilhado entre loja e painel. */
+function preferredDark(): boolean {
+  try {
+    const t = window.localStorage.getItem(THEME_KEY);
+    if (t) return t === 'dark';
+  } catch {
+    /* segue para a preferência do sistema */
+  }
+  return !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+}
+
+/**
+ * Tema claro/noturno compartilhado entre loja e painel.
+ * Começa claro no servidor e aplica a preferência salva assim que a página carrega.
+ */
 export function useTheme() {
-  const [dark, setDark] = useState(initialDark);
-  const toggle = useCallback(() => {
+  const [dark, setDark] = useState(false);
+  useEffect(() => setDark(preferredDark()), []);
+  const toggleDark = useCallback(() => {
     setDark((d) => {
-      const next = !d;
-      try {
-        window.localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
-      } catch {
-        /* armazenamento indisponível */
-      }
-      return next;
+      write(THEME_KEY, d ? 'light' : 'dark');
+      return !d;
     });
   }, []);
-  return { dark, toggleDark: toggle };
+  return { dark, toggleDark };
 }
 
 interface StoreValue {
@@ -70,8 +65,6 @@ interface StoreValue {
   setLineQty: (key: string, qty: number) => void;
   removeLine: (key: string) => void;
   clearDemo: () => void;
-  filters: CatalogFilters;
-  setFilters: (patch: Partial<CatalogFilters>) => void;
   toast: string | null;
   showToast: (msg: string) => void;
   dark: boolean;
@@ -81,33 +74,28 @@ interface StoreValue {
 const StoreContext = createContext<StoreValue | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [favs, setFavs] = useState<string[]>(() => {
-    const d = readJSON<{ favs?: unknown }>(DATA_KEY, {});
-    return Array.isArray(d.favs) ? (d.favs as string[]) : [];
-  });
-  const [cart, setCart] = useState<CartLine[]>(() => {
-    const d = readJSON<{ cart?: unknown }>(DATA_KEY, {});
-    return Array.isArray(d.cart) ? (d.cart as CartLine[]) : [];
-  });
-  const [filters, setFilterState] = useState<CatalogFilters>(DEFAULT_FILTERS);
+  const [favs, setFavs] = useState<string[]>([]);
+  const [cart, setCart] = useState<CartLine[]>([]);
+  // Só grava no navegador depois de ler o que já estava salvo, para não apagar a sacola.
+  const [loaded, setLoaded] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
   const { dark, toggleDark } = useTheme();
-  const location = useLocation();
+  const pathname = usePathname();
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(DATA_KEY, JSON.stringify({ favs, cart }));
-    } catch {
-      /* armazenamento indisponível */
-    }
-  }, [favs, cart]);
+    const d = readJSON<{ favs?: unknown; cart?: unknown }>(DATA_KEY, {});
+    if (Array.isArray(d.favs)) setFavs(d.favs as string[]);
+    if (Array.isArray(d.cart)) setCart(d.cart as CartLine[]);
+    setLoaded(true);
+  }, []);
 
-  // Cada navegação volta ao topo e dispensa o aviso.
   useEffect(() => {
-    window.scrollTo(0, 0);
-    setToast(null);
-  }, [location.pathname]);
+    if (loaded) write(DATA_KEY, JSON.stringify({ favs, cart }));
+  }, [loaded, favs, cart]);
+
+  // Trocar de página dispensa o aviso.
+  useEffect(() => setToast(null), [pathname]);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -137,14 +125,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCart([]);
         setToast(null);
       },
-      filters,
-      setFilters: (patch) => setFilterState((f) => ({ ...f, ...patch })),
       toast,
       showToast,
       dark,
       toggleDark,
     }),
-    [favs, cart, filters, toast, showToast, dark, toggleDark],
+    [favs, cart, toast, showToast, dark, toggleDark],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

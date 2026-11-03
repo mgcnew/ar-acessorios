@@ -1,49 +1,44 @@
-import { useMemo, useState } from 'react';
-import { ProductGrid } from '../components/ProductCard';
+'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FilterIcon, SearchIcon } from '../components/Icons';
+import { ProductGrid } from '../components/ProductCard';
 import { EmptyState, PageHead } from '../components/ui';
-import { CATEGORIES, catName, isAvailable, minPrice, norm, PRODUCTS, type CategoryId } from '../data/catalog';
-import { DEFAULT_FILTERS, useStore, type SortKey } from '../store';
+import { CATEGORIES, type CategoryId } from '../data/catalog';
+import { catalogHref, countInCategory, filterProducts, readQuery, SORTS, type CatalogQuery, type SortValue } from '../data/catalogQuery';
 
 const CAT_OPTIONS: { id: CategoryId | 'all'; name: string }[] = [{ id: 'all', name: 'Todas' }, ...CATEGORIES];
 
-export function Catalog() {
-  const { filters, setFilters } = useStore();
+/** Catálogo: categoria vem do caminho (/loja/brincos); busca, ordem e disponibilidade, do endereço. */
+export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
+  const router = useRouter();
+  const params = useSearchParams();
+  const query = readQuery(cat, new URLSearchParams(params.toString()));
   const [filterOpen, setFilterOpen] = useState(false);
-  const { cat, q, sort, onlyAvail } = filters;
+  // A busca digitada responde na hora; o endereço é atualizado logo em seguida.
+  const [q, setQ] = useState(query.q);
+  useEffect(() => setQ(query.q), [query.q]);
 
-  const results = useMemo(() => {
-    let list = PRODUCTS.filter((p) => cat === 'all' || p.catIds.includes(cat));
-    const nq = norm(q.trim());
-    if (nq) {
-      list = list.filter((p) =>
-        norm(`${p.name} ${p.desc} ${p.catIds.map((c) => catName[c]).join(' ')}${p.isKit ? ' kit' : ''}`).includes(nq),
-      );
-    }
-    if (onlyAvail) list = list.filter(isAvailable);
-    const sorted = list.slice();
-    if (sort === 'asc') sorted.sort((a, b) => minPrice(a) - minPrice(b));
-    else if (sort === 'desc') sorted.sort((a, b) => minPrice(b) - minPrice(a));
-    else if (sort === 'az') sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-    else if (sort === 'new') sorted.sort((a, b) => Number(b.isNew) - Number(a.isNew));
-    return sorted;
-  }, [cat, q, sort, onlyAvail]);
-
-  const countFor = (id: CategoryId | 'all') => PRODUCTS.filter((p) => id === 'all' || p.catIds.includes(id)).length;
+  const go = (patch: Partial<CatalogQuery>) => router.replace(catalogHref({ ...query, ...patch }), { scroll: false });
   const clearFilters = () => {
-    setFilters(DEFAULT_FILTERS);
+    setQ('');
     setFilterOpen(false);
+    router.replace('/loja', { scroll: false });
   };
+
+  const results = filterProducts({ ...query, q });
+  const title = cat === 'all' ? 'Todas as peças' : CATEGORIES.find((c) => c.id === cat)!.name;
 
   return (
     <div className="wrap fade">
-      <PageHead eyebrow="Loja" title="Todas as peças">
+      <PageHead eyebrow="Loja" title={title}>
         <p role="status">{results.length === 1 ? '1 peça' : `${results.length} peças`}</p>
       </PageHead>
 
       <div className="chips" role="group" aria-label="Categorias">
         {CAT_OPTIONS.map((c) => (
-          <button key={c.id} className={`pill${cat === c.id ? ' on' : ''}`} aria-pressed={cat === c.id} onClick={() => setFilters({ cat: c.id })}>
+          <button key={c.id} className={`pill${cat === c.id ? ' on' : ''}`} aria-pressed={cat === c.id} onClick={() => go({ cat: c.id })}>
             {c.name}
           </button>
         ))}
@@ -57,16 +52,16 @@ export function Catalog() {
               <h3>Categorias</h3>
               {CAT_OPTIONS.map((c) => (
                 <label key={c.id} className="opt">
-                  <input type="radio" name="fcat" checked={cat === c.id} onChange={() => setFilters({ cat: c.id })} />
+                  <input type="radio" name="fcat" checked={cat === c.id} onChange={() => go({ cat: c.id })} />
                   <span>{c.name}</span>
-                  <small>{countFor(c.id)}</small>
+                  <small>{countInCategory(c.id)}</small>
                 </label>
               ))}
             </div>
             <div className="fgroup">
               <h3>Disponibilidade</h3>
               <label className="opt">
-                <input type="checkbox" checked={onlyAvail} onChange={() => setFilters({ onlyAvail: !onlyAvail })} />
+                <input type="checkbox" checked={query.onlyAvail} onChange={() => go({ onlyAvail: !query.onlyAvail })} />
                 <span>Somente disponíveis</span>
               </label>
             </div>
@@ -90,7 +85,10 @@ export function Catalog() {
                 placeholder="Buscar por nome ou categoria"
                 aria-label="Buscar produtos"
                 value={q}
-                onChange={(e) => setFilters({ q: e.target.value })}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  go({ q: e.target.value });
+                }}
               />
             </label>
             <button className="fbtn" onClick={() => setFilterOpen(true)}>
@@ -99,12 +97,12 @@ export function Catalog() {
             </button>
             <label style={{ display: 'contents' }}>
               <span className="sr-only">Ordenar por</span>
-              <select className="sel" value={sort} onChange={(e) => setFilters({ sort: e.target.value as SortKey })}>
-                <option value="rel">Relevância</option>
-                <option value="new">Lançamentos</option>
-                <option value="asc">Menor preço</option>
-                <option value="desc">Maior preço</option>
-                <option value="az">Nome (A–Z)</option>
+              <select className="sel" value={query.sort} onChange={(e) => go({ sort: e.target.value as SortValue })}>
+                {SORTS.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
               </select>
             </label>
           </div>

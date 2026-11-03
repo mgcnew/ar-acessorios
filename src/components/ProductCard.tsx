@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
 import { artOf, categoryLabel, cheapestVariant, fmt, isAvailable, type Product } from '../data/catalog';
 import { useStore } from '../store';
 import { Art } from './Art';
@@ -13,24 +15,22 @@ export function productBadge(p: Product): string {
 }
 
 export function ProductCard({ product: p }: { product: Product }) {
-  const navigate = useNavigate();
   const { favs, toggleFav } = useStore();
   const cheapest = cheapestVariant(p);
   const anyAvail = isAvailable(p);
   const from = new Set(p.variants.map((v) => v.price)).size > 1;
   const isFav = favs.includes(p.id);
   const badge = productBadge(p);
-  const art = artOf(p);
-  const open = () => navigate(`/produto/${p.id}`);
+  const href = `/produto/${p.slug}`;
 
   return (
     <article className="pc">
       <div className="pc-media">
-        <button className="pc-img" onClick={open} aria-label={`Ver ${p.name}`}>
+        <Link className="pc-img" href={href} aria-label={`Ver ${p.name}`} tabIndex={-1}>
           <div className="pc-zoom">
-            <Art {...art} ratio="4 / 5" />
+            <Art {...artOf(p)} ratio="4 / 5" />
           </div>
-        </button>
+        </Link>
         {badge && <span className="pc-badge">{badge}</span>}
         {!anyAvail && (
           <div className="pc-sold">
@@ -46,7 +46,7 @@ export function ProductCard({ product: p }: { product: Product }) {
           <HeartIcon filled={isFav} />
         </button>
       </div>
-      <button className="pc-body" onClick={open}>
+      <Link className="pc-body" href={href}>
         <span className="pc-cat">{categoryLabel(p)}</span>
         <span className="pc-name">{p.name}</span>
         <span className="pc-price">
@@ -54,7 +54,7 @@ export function ProductCard({ product: p }: { product: Product }) {
           <span>{fmt(cheapest.price)}</span>
           {cheapest.compare && anyAvail && <span className="pc-old">{fmt(cheapest.compare)}</span>}
         </span>
-      </button>
+      </Link>
     </article>
   );
 }

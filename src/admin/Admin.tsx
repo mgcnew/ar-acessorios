@@ -1,5 +1,7 @@
+'use client';
+
+import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
 import { LogoMark } from '../components/ui';
 import { fmt, norm } from '../data/catalog';
@@ -69,7 +71,7 @@ export function Admin() {
           ))}
         </nav>
         <div className="side-f">
-          <Link className="sl" to="/">
+          <Link className="sl" href="/">
             Ver a loja
           </Link>
           <button className="sl" onClick={toggleDark} aria-pressed={dark}>

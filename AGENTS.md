@@ -19,12 +19,18 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 - Nunca: migração destrutiva, deploy de produção, segredos no repositório, chave `service_role` no cliente.
 
 ## Fase atual
-**Fase 0 — Base.** Autorizado: protótipo visual com dados fictícios (Vite + React em `src/`). Backend, Supabase, Mercado Pago e deploy de produção **não** estão autorizados.
+**Fase 1 — Fundação** (autorizada em 03/11/2026). Autorizado: site em Next.js com dados fictícios; projeto Supabase com banco, login do painel e schema de catálogo e estoque (Módulo 01). **Não autorizado:** pagamento real, deploy de produção.
+
+## Estrutura
+- `src/app/` — rotas do Next.js. `(loja)/` agrupa as páginas da vitrine; `admin/` é o painel.
+- `src/views/` — conteúdo de cada página (não use `src/pages/`: o Next.js reserva esse nome).
+- `src/components/` — peças reutilizáveis. `src/data/` — catálogo fictício e filtros. `src/store.tsx` — sacola, favoritos e tema.
+- `src/styles/` — CSS da loja (escopo `.ar`) e do painel (escopo `.adm`).
 
 ## Comandos
 ```bash
 npm install
-npm run dev        # servidor local
+npm run dev        # servidor local (http://localhost:3000)
 npm run typecheck
-npm run build
+npm run build      # build de produção, gera as páginas estáticas
 ```

@@ -1,19 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import Link from 'next/link';
 import { Art } from '../components/Art';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead } from '../components/ui';
-import { CATEGORIES, CATEGORY_TONES, cheapestVariant, fmt, isAvailable, PRODUCTS, type CategoryId } from '../data/catalog';
-import { DEFAULT_FILTERS, useStore } from '../store';
+import { CATEGORIES, CATEGORY_TONES, cheapestVariant, fmt, isAvailable, PRODUCTS } from '../data/catalog';
+import { catalogHref } from '../data/catalogQuery';
 
 export function Home() {
-  const navigate = useNavigate();
-  const { setFilters } = useStore();
-  const toCatalog = (patch: Parameters<typeof setFilters>[0] = {}) => {
-    setFilters({ cat: 'all', ...patch });
-    navigate('/loja');
-  };
-  const toCategory = (cat: CategoryId) => toCatalog({ cat, q: '', onlyAvail: false });
-
   const newest = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
   const best = PRODUCTS.filter((p) => p.best).slice(0, 4);
   const kits = PRODUCTS.filter((p) => p.isKit);
@@ -31,12 +23,12 @@ export function Home() {
               Semijoias de acabamento refinado para compor o seu estilo — do básico de todo dia aos presentes que ficam na memória.
             </p>
             <div className="hero-cta">
-              <button className="btn btn-p" onClick={() => toCatalog()}>
+              <Link className="btn btn-p" href="/loja">
                 Explorar a loja
-              </button>
-              <button className="btn btn-s" onClick={() => toCatalog({ ...DEFAULT_FILTERS, q: 'kit' })}>
+              </Link>
+              <Link className="btn btn-s" href={catalogHref({ q: 'kit' })}>
                 Conhecer os kits
-              </button>
+              </Link>
             </div>
           </div>
           <div className="hero-art">
@@ -57,12 +49,12 @@ export function Home() {
         <SectionHead eyebrow="Navegue por categoria" title="Escolha o seu estilo" id="h-cats" />
         <div className="ctiles">
           {CATEGORIES.map((c, i) => (
-            <button key={c.id} className="ctile" onClick={() => toCategory(c.id)} aria-label={`Ver ${c.name}`}>
+            <Link key={c.id} className="ctile" href={catalogHref({ cat: c.id })} aria-label={`Ver ${c.name}`}>
               <div className="ctile-i">
                 <Art cat={c.id} tone={CATEGORY_TONES[i]} gem bg={i % 4} />
               </div>
               <span>{c.name}</span>
-            </button>
+            </Link>
           ))}
         </div>
       </section>
@@ -73,9 +65,9 @@ export function Home() {
           title="Lançamentos"
           id="h-new"
           action={
-            <button className="lnk" onClick={() => toCatalog({ ...DEFAULT_FILTERS, sort: 'new' })}>
+            <Link className="lnk" href={catalogHref({ sort: 'novos' })}>
               Ver tudo
-            </button>
+            </Link>
           }
         />
         <ProductGrid products={newest} />
@@ -87,9 +79,9 @@ export function Home() {
           title="Mais vendidos"
           id="h-best"
           action={
-            <button className="lnk" onClick={() => toCatalog()}>
+            <Link className="lnk" href="/loja">
               Ver a loja
-            </button>
+            </Link>
           }
         />
         <ProductGrid products={best} />
@@ -99,22 +91,21 @@ export function Home() {
         <SectionHead eyebrow="Para presentear" title="Vitrine de kits" id="h-kits" />
         <div className="kits">
           {kits.map((k) => {
-            const open = () => navigate(`/produto/${k.id}`);
-            const soldout = !isAvailable(k);
+            const href = `/produto/${k.slug}`;
             return (
               <article key={k.id} className="kit">
-                <button onClick={open} aria-label={`Ver ${k.name}`} style={{ display: 'block', width: '100%' }}>
+                <Link href={href} aria-label={`Ver ${k.name}`} tabIndex={-1} style={{ display: 'block' }}>
                   <Art cat="kit" tone={k.tone} gem bg={k.bg} ratio="5 / 4" />
-                </button>
+                </Link>
                 <div className="kit-b">
                   <span className="eyebrow">{k.kind === 'kit_stocked' ? 'Kit com estoque próprio' : 'Kit composto'}</span>
                   <h3>{k.name}</h3>
                   <p>{k.short}</p>
                   <div className="kit-f">
                     <strong>{fmt(cheapestVariant(k).price)}</strong>
-                    <button className="btn btn-s" onClick={open}>
-                      {soldout ? 'Ver detalhes' : 'Ver kit'}
-                    </button>
+                    <Link className="btn btn-s" href={href}>
+                      {isAvailable(k) ? 'Ver kit' : 'Ver detalhes'}
+                    </Link>
                   </div>
                 </div>
               </article>
@@ -135,9 +126,9 @@ export function Home() {
               cuidadosa e acabamento delicado.
             </p>
             <div style={{ marginTop: 26 }}>
-              <button className="btn btn-p" onClick={() => navigate('/sobre')}>
+              <Link className="btn btn-p" href="/sobre">
                 Conheça a marca
-              </button>
+              </Link>
             </div>
           </div>
           <div className="rounded" aria-label="Espaço para foto das embalagens da marca">

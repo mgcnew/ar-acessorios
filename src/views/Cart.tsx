@@ -1,5 +1,7 @@
+'use client';
+
+import Link from 'next/link';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Art } from '../components/Art';
 import { BagIcon, TrashIcon } from '../components/Icons';
 import { EmptyState, PageHead, Stepper } from '../components/ui';
@@ -28,18 +30,13 @@ function useCartLines() {
   return { lines, subtotal, itemCount };
 }
 
-function useGoCatalog() {
-  const navigate = useNavigate();
-  const { setFilters } = useStore();
-  return () => {
-    setFilters({ cat: 'all' });
-    navigate('/loja');
-  };
-}
+const exploreLink = (
+  <Link className="btn btn-p" href="/loja">
+    Explorar a loja
+  </Link>
+);
 
 export function Cart() {
-  const navigate = useNavigate();
-  const goCatalog = useGoCatalog();
   const { setLineQty, removeLine } = useStore();
   const { lines, subtotal, itemCount } = useCartLines();
 
@@ -50,16 +47,16 @@ export function Cart() {
         <div className="cart-l">
           <div>
             {lines.map(({ line, product, variant, art, total }) => {
-              const open = () => navigate(`/produto/${product.id}`);
+              const href = `/produto/${product.slug}`;
               return (
                 <div key={line.key} className="line">
-                  <button className="line-i" onClick={open} aria-label={`Ver ${product.name}`}>
+                  <Link className="line-i" href={href} aria-label={`Ver ${product.name}`} tabIndex={-1}>
                     <Art {...art} />
-                  </button>
+                  </Link>
                   <div className="line-b">
-                    <button className="line-n" onClick={open}>
+                    <Link className="line-n" href={href}>
                       {product.name}
-                    </button>
+                    </Link>
                     <span className="line-v">
                       {variant.label} · {fmt(variant.price)}
                     </span>
@@ -100,12 +97,12 @@ export function Cart() {
               <span>{fmt(subtotal)}</span>
             </div>
             <p className="note">Valores ilustrativos para apresentação. Nenhuma compra é realizada.</p>
-            <button className="btn btn-p" onClick={() => navigate('/checkout')} style={{ marginTop: 6 }}>
+            <Link className="btn btn-p" href="/checkout" style={{ marginTop: 6 }}>
               Ver prévia do checkout
-            </button>
-            <button className="btn btn-s" onClick={goCatalog}>
+            </Link>
+            <Link className="btn btn-s" href="/loja">
               Continuar explorando
-            </button>
+            </Link>
           </aside>
         </div>
       ) : (
@@ -114,11 +111,7 @@ export function Cart() {
           icon={<BagIcon size={40} strokeWidth={1.3} style={{ color: 'var(--acc)' }} />}
           title="Sua sacola está vazia"
           text="Escolha uma peça na loja para ver como a sacola funciona nesta demonstração."
-          action={
-            <button className="btn btn-p" onClick={goCatalog}>
-              Explorar a loja
-            </button>
-          }
+          action={exploreLink}
         />
       )}
     </div>
@@ -139,8 +132,6 @@ const DEMO_ADDRESS = [
 ];
 
 export function Checkout() {
-  const navigate = useNavigate();
-  const goCatalog = useGoCatalog();
   const { lines, subtotal } = useCartLines();
   const [pay, setPay] = useState('pix');
 
@@ -217,9 +208,9 @@ export function Checkout() {
               <button className="btn btn-p" disabled aria-disabled="true" style={{ marginTop: 6 }}>
                 Compras indisponíveis nesta demonstração
               </button>
-              <button className="lnk" onClick={() => navigate('/sacola')}>
+              <Link className="lnk" href="/sacola">
                 Voltar à sacola
-              </button>
+              </Link>
             </aside>
           </div>
         ) : (
@@ -227,11 +218,7 @@ export function Checkout() {
             style={{ marginBottom: 60 }}
             title="Nada para visualizar"
             text="Adicione peças à sacola para ver a prévia do checkout de demonstração."
-            action={
-              <button className="btn btn-p" onClick={goCatalog}>
-                Explorar a loja
-              </button>
-            }
+            action={exploreLink}
           />
         )}
       </div>

@@ -34,6 +34,8 @@ export interface KitComponent {
 
 export interface Product {
   id: string;
+  /** Endereço amigável da página do produto (/produto/<slug>). */
+  slug: string;
   code: string;
   name: string;
   catIds: CategoryId[];
@@ -81,6 +83,11 @@ export const catName: Record<CategoryId, string> = Object.fromEntries(
 const stripDiacritics = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 export const norm = (s: string) => stripDiacritics(String(s)).toLowerCase();
+
+export const slugify = (s: string) =>
+  norm(s)
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 const skuPart = (s: string) =>
   stripDiacritics(String(s)).replace(/[^A-Za-z0-9]+/g, '').toUpperCase().slice(0, 4);
@@ -173,6 +180,7 @@ export const PRODUCTS: Product[] = RAW.map((r, i) => {
   });
   return {
     id: r.id,
+    slug: slugify(r.name),
     code: r.code,
     name: r.name,
     catIds: r.catIds,
@@ -197,6 +205,10 @@ export const PRODUCTS: Product[] = RAW.map((r, i) => {
 });
 
 export const productById: Record<string, Product> = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
+
+export const productBySlug: Record<string, Product> = Object.fromEntries(PRODUCTS.map((p) => [p.slug, p]));
+
+export const isCategoryId = (s: string): s is CategoryId => CATEGORIES.some((c) => c.id === s);
 
 export const artOf = (p: Product, v?: Variant): ArtProps => ({
   cat: p.isKit ? 'kit' : p.catIds[0],

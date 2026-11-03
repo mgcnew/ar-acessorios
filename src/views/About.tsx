@@ -1,6 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import Link from 'next/link';
 import { Art } from '../components/Art';
-import { useStore } from '../store';
 
 const PILLARS = [
   { n: '01', title: 'Acabamento cuidadoso', text: 'Peças pensadas para combinar entre si e compor com o seu dia a dia.' },
@@ -9,9 +8,6 @@ const PILLARS = [
 ];
 
 export function About() {
-  const navigate = useNavigate();
-  const { setFilters } = useStore();
-
   return (
     <div className="wrap fade" style={{ paddingBottom: 20 }}>
       <div className="split sec">
@@ -43,15 +39,9 @@ export function About() {
         ))}
       </div>
       <div style={{ textAlign: 'center', padding: '48px 0 20px' }}>
-        <button
-          className="btn btn-p"
-          onClick={() => {
-            setFilters({ cat: 'all' });
-            navigate('/loja');
-          }}
-        >
+        <Link className="btn btn-p" href="/loja">
           Explorar a loja
-        </button>
+        </Link>
       </div>
     </div>
   );

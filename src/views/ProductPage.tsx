@@ -1,5 +1,7 @@
+'use client';
+
+import Link from 'next/link';
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Art } from '../components/Art';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
@@ -27,16 +29,9 @@ function relatedTo(p: Product): Product[] {
   return [...sameCat, ...rest];
 }
 
-export function ProductRoute() {
-  const { id = '' } = useParams();
-  const p = productById[id];
-  if (!p) return <Navigate to="/loja" replace />;
-  return <ProductPage key={p.id} product={p} />;
-}
-
-function ProductPage({ product: p }: { product: Product }) {
-  const navigate = useNavigate();
-  const { favs, toggleFav, addToCart, showToast, setFilters } = useStore();
+export function ProductPage({ productId }: { productId: string }) {
+  const p = productById[productId];
+  const { favs, toggleFav, addToCart, showToast } = useStore();
   const [sel, setSel] = useState<string[]>(() => (p.variants.find((v) => v.avail) ?? p.variants[0]).vals);
   const [qty, setQty] = useState(1);
   const [gal, setGal] = useState(0);
@@ -63,16 +58,9 @@ function ProductPage({ product: p }: { product: Product }) {
   return (
     <div className="wrap fade">
       <nav className="crumbs" aria-label="Você está em">
-        <button onClick={() => navigate('/')}>Início</button>
+        <Link href="/">Início</Link>
         <span aria-hidden="true">/</span>
-        <button
-          onClick={() => {
-            setFilters({ cat: 'all' });
-            navigate('/loja');
-          }}
-        >
-          Loja
-        </button>
+        <Link href="/loja">Loja</Link>
         <span aria-hidden="true">/</span>
         <span>{p.name}</span>
       </nav>

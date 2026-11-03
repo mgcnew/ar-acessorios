@@ -1,5 +1,5 @@
 /* AR Acessórios — estilos do painel administrativo (escopo .adm). */
-.adm{--bg:#FDF6F0;--surf:#FFF9F4;--champ:#EAD9C6;--rose:#C89F7A;--ink:#38291F;--ink2:#6B4E3D;--line:#E8DAD0;--acc:#8A5A38;--field:#F4EBE2;--ok:#E3EEDC;--okt:#2F5A24;--warn:#F6E6C8;--warnt:#6B4A0C;--bad:#F3D9D3;--badt:#8A2E1F;--info:#E0E7F1;--infot:#2B4A75;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',system-ui,sans-serif}
+.adm{--bg:#FDF6F0;--surf:#FFF9F4;--champ:#EAD9C6;--rose:#C89F7A;--ink:#38291F;--ink2:#6B4E3D;--line:#E8DAD0;--acc:#8A5A38;--field:#F4EBE2;--ok:#E3EEDC;--okt:#2F5A24;--warn:#F6E6C8;--warnt:#6B4A0C;--bad:#F3D9D3;--badt:#8A2E1F;--info:#E0E7F1;--infot:#2B4A75;--serif:var(--font-serif),Georgia,serif;--sans:var(--font-sans),system-ui,sans-serif}
 .adm.dark{--bg:#1B1511;--surf:#261D17;--champ:#3A2D24;--ink:#F5E9DC;--ink2:#CDB8A5;--line:#43342A;--acc:#E0B48C;--field:#2E231C;--ok:#233420;--okt:#B5DDA8;--warn:#3F3216;--warnt:#F0D18A;--bad:#432520;--badt:#F2B3A6;--info:#1F2D42;--infot:#B7CDEE}
 .adm{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-wrap:wrap;line-height:1.5;overflow-x:clip}
 .adm *{box-sizing:border-box}

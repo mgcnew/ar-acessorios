@@ -2,7 +2,7 @@
 
 > **Documentação do projeto:** comece por [`docs/DECISOES.md`](docs/DECISOES.md) (decisões) e [`docs/DOCUMENTO_MESTRE.md`](docs/DOCUMENTO_MESTRE.md) (visão e plano). Agentes de IA seguem [`AGENTS.md`](AGENTS.md).
 
-Protótipo navegável da loja de semijoias AR Acessórios (React + TypeScript + Vite), feito a partir do design "AR Acessórios — Protótipo". Produtos, preços, pedidos e endereços são fictícios: nenhuma compra é realizada.
+Loja de semijoias AR Acessórios (Next.js + React + TypeScript), hoje com dados de demonstração, feito a partir do design "AR Acessórios — Protótipo". Produtos, preços, pedidos e endereços são fictícios: nenhuma compra é realizada.
 
 ```bash
 npm install
@@ -13,22 +13,17 @@ npm run dev
 
 | Rota | Tela |
 | --- | --- |
-| `/` | Início (hero, categorias, lançamentos, mais vendidos, kits) |
-| `/loja` | Catálogo com busca, filtros e ordenação |
-| `/produto/:id` | Página do produto com variantes, estoque e kits |
+| `/` | Início |
+| `/loja`, `/loja/[categoria]` | Catálogo; busca, ordem e disponibilidade no endereço (`?q=`, `?ordem=`, `?disponiveis=1`) |
+| `/produto/[slug]` | Produto, com variações e kits |
 | `/favoritos`, `/sacola`, `/checkout` | Favoritos, sacola e prévia do checkout |
-| `/sobre` | Página institucional |
-| `/admin` | Painel administrativo (demonstração) |
+| `/sobre` | Institucional |
+| `/admin` | Painel (demonstração; ainda não salva) |
 
-A sacola, os favoritos e o tema noturno ficam salvos no `localStorage` do navegador.
+O site está fora dos buscadores (`noindex`) até o lançamento.
 
 ## Estrutura
 
-- `src/data/catalog.ts`: catálogo, variantes, SKUs e disponibilidade dos kits
-- `src/store.tsx`: estado da loja (sacola, favoritos, filtros, aviso, tema)
-- `src/components/`: `Art` (ilustrações no lugar das fotos), `ProductCard`, layout e peças de UI
-- `src/pages/`: telas da loja
-- `src/admin/`: painel e dados fictícios dele
-- `src/styles/`: estilos da loja (`.ar`) e do painel (`.adm`)
+Veja [`AGENTS.md`](AGENTS.md).
 
-A logo é a oficial (`src/assets/logo-ar.jpg`). Para gerar a prévia publicável, que navega sem depender do endereço da página: `npm run build:preview` (saída em `dist-preview/`).
+A logo é a oficial (`src/assets/logo-ar.jpg`).

@@ -1,18 +1,21 @@
-import type { ReactElement } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { CATEGORIES, productById } from '../data/catalog';
-import { DEFAULT_FILTERS, useStore } from '../store';
+'use client';
+
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, type ReactElement, type ReactNode } from 'react';
+import { CATEGORIES } from '../data/catalog';
+import { catalogHref } from '../data/catalogQuery';
+import { useStore } from '../store';
 import { BagIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
 import { LogoMark } from './ui';
 
-
 type NavKey = 'home' | 'catalog' | 'favs' | 'about';
 
-const NAV: { label: string; key: NavKey; to: string; icon: () => ReactElement }[] = [
-  { label: 'Início', key: 'home', to: '/', icon: () => <HomeIcon /> },
-  { label: 'Loja', key: 'catalog', to: '/loja', icon: () => <GemIcon /> },
-  { label: 'Favoritos', key: 'favs', to: '/favoritos', icon: () => <HeartIcon size={24} /> },
-  { label: 'Sobre', key: 'about', to: '/sobre', icon: () => <InfoIcon /> },
+const NAV: { label: string; key: NavKey; href: string; icon: () => ReactElement }[] = [
+  { label: 'Início', key: 'home', href: '/', icon: () => <HomeIcon /> },
+  { label: 'Loja', key: 'catalog', href: '/loja', icon: () => <GemIcon /> },
+  { label: 'Favoritos', key: 'favs', href: '/favoritos', icon: () => <HeartIcon size={24} /> },
+  { label: 'Sobre', key: 'about', href: '/sobre', icon: () => <InfoIcon /> },
 ];
 
 function activeNav(pathname: string): NavKey | null {
@@ -23,22 +26,14 @@ function activeNav(pathname: string): NavKey | null {
   return null;
 }
 
-export function StoreLayout() {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const { dark, toggleDark, favs, cart, filters, setFilters, toast, clearDemo } = useStore();
+export function StoreLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { dark, toggleDark, favs, cart, toast, clearDemo } = useStore();
+  const [search, setSearch] = useState('');
   const active = activeNav(pathname);
   const cartCount = cart.reduce((s, l) => s + l.qty, 0);
-  const isProduct = pathname.startsWith('/produto/') && !!productById[pathname.split('/')[2]];
-
-  const goNav = (key: NavKey, to: string) => {
-    if (key === 'catalog') setFilters({ cat: 'all' });
-    navigate(to);
-  };
-  const goCatalog = () => {
-    setFilters({ cat: 'all' });
-    navigate('/loja');
-  };
+  const isProduct = pathname.startsWith('/produto/');
 
   return (
     <div className={`ar${isProduct ? ' r-product' : ''}${dark ? ' dark' : ''}`}>
@@ -50,62 +45,53 @@ export function StoreLayout() {
       </div>
       <header className="hdr">
         <div className="hdr-in">
-          <Link className="logo-btn" to="/" aria-label="AR Acessórios — ir para o início">
+          <Link className="logo-btn" href="/" aria-label="AR Acessórios — ir para o início">
             <LogoMark />
           </Link>
           <nav className="nav-d" aria-label="Principal">
             {NAV.map((n) => (
-              <button
-                key={n.key}
-                className={`nav-link${active === n.key ? ' on' : ''}`}
-                aria-current={active === n.key ? 'page' : undefined}
-                onClick={() => goNav(n.key, n.to)}
-              >
+              <Link key={n.key} href={n.href} className={`nav-link${active === n.key ? ' on' : ''}`} aria-current={active === n.key ? 'page' : undefined}>
                 {n.label}
-              </button>
+              </Link>
             ))}
           </nav>
           <div className="hdr-act">
-            <label className="srch">
+            <form
+              className="srch"
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                router.push(catalogHref({ q: search.trim() }));
+              }}
+            >
               <SearchIcon />
-              <input
-                type="search"
-                placeholder="Buscar joias"
-                aria-label="Buscar joias"
-                value={filters.q}
-                onChange={(e) => {
-                  setFilters({ q: e.target.value, cat: 'all' });
-                  if (!pathname.startsWith('/loja')) navigate('/loja');
-                }}
-              />
-            </label>
-            <button className="ib ib-m" onClick={goCatalog} aria-label="Buscar na loja">
+              <input type="search" placeholder="Buscar joias" aria-label="Buscar joias" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </form>
+            <Link className="ib ib-m" href="/loja" aria-label="Buscar na loja">
               <SearchIcon size={22} />
-            </button>
+            </Link>
             <button className="ib" onClick={toggleDark} aria-pressed={dark} aria-label={dark ? 'Ativar modo claro' : 'Ativar modo noturno'}>
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
-            <button className="ib" onClick={() => navigate('/favoritos')} aria-label={`Favoritos (${favs.length})`}>
+            <Link className="ib" href="/favoritos" aria-label={`Favoritos (${favs.length})`}>
               <HeartIcon />
               {favs.length > 0 && <span className="cnt">{favs.length}</span>}
-            </button>
-            <button className="ib" onClick={() => navigate('/sacola')} aria-label={`Sacola (${cartCount} itens)`}>
+            </Link>
+            <Link className="ib" href="/sacola" aria-label={`Sacola (${cartCount} itens)`}>
               <BagIcon />
               {cartCount > 0 && <span className="cnt">{cartCount}</span>}
-            </button>
+            </Link>
           </div>
         </div>
       </header>
 
-      <main id="conteudo">
-        <Outlet />
-      </main>
+      <main id="conteudo">{children}</main>
 
       <footer className="foot">
         <div className="wrap">
           <div className="foot-g">
             <div>
-              <Link className="logo-btn" to="/" aria-label="AR Acessórios — início" style={{ marginBottom: 14 }}>
+              <Link className="logo-btn" href="/" aria-label="AR Acessórios — início" style={{ marginBottom: 14 }}>
                 <LogoMark />
               </Link>
               <p>Semijoias delicadas para o dia a dia e para presentear.</p>
@@ -115,14 +101,7 @@ export function StoreLayout() {
               <ul>
                 {CATEGORIES.map((c) => (
                   <li key={c.id}>
-                    <button
-                      onClick={() => {
-                        setFilters({ ...DEFAULT_FILTERS, sort: filters.sort, cat: c.id });
-                        navigate('/loja');
-                      }}
-                    >
-                      {c.name}
-                    </button>
+                    <Link href={catalogHref({ cat: c.id })}>{c.name}</Link>
                   </li>
                 ))}
               </ul>
@@ -131,16 +110,16 @@ export function StoreLayout() {
               <h4>Institucional</h4>
               <ul>
                 <li>
-                  <button onClick={() => navigate('/sobre')}>Sobre a AR</button>
+                  <Link href="/sobre">Sobre a AR</Link>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/favoritos')}>Favoritos</button>
+                  <Link href="/favoritos">Favoritos</Link>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/sacola')}>Sacola</button>
+                  <Link href="/sacola">Sacola</Link>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/admin')}>Painel da loja (demonstração)</button>
+                  <Link href="/admin">Painel da loja (demonstração)</Link>
                 </li>
               </ul>
             </div>
@@ -164,22 +143,17 @@ export function StoreLayout() {
 
       <nav className="bnav" aria-label="Navegação inferior">
         {NAV.map((n) => (
-          <button
-            key={n.key}
-            className={`bn${active === n.key ? ' on' : ''}`}
-            aria-current={active === n.key ? 'page' : undefined}
-            onClick={() => goNav(n.key, n.to)}
-          >
+          <Link key={n.key} href={n.href} className={`bn${active === n.key ? ' on' : ''}`} aria-current={active === n.key ? 'page' : undefined}>
             {n.icon()}
             <span>{n.label}</span>
-          </button>
+          </Link>
         ))}
       </nav>
 
       {toast && (
         <div className="toast" role="status">
           <span>{toast}</span>
-          <button onClick={() => navigate('/sacola')}>Ver sacola</button>
+          <Link href="/sacola">Ver sacola</Link>
         </div>
       )}
     </div>

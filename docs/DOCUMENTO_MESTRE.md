@@ -46,7 +46,7 @@ Marketplace com vendedores terceiros, atacado, programa de pontos, aplicativo na
 
 ## 5. Arquitetura
 
-**Stack:** desenvolvimento próprio (D-016); proposta em PR-003 (Next.js + TypeScript + Tailwind + Supabase na Vercel).
+**Stack:** desenvolvimento próprio (D-016) com Next.js + React + TypeScript + Supabase na Vercel (D-018).
 
 **Princípios** (valem para qualquer stack):
 1. Uma única loja: sem `tenant_id`, sem multi-loja.
@@ -101,7 +101,7 @@ Marketplace com vendedores terceiros, atacado, programa de pontos, aplicativo na
 | Fase | Entrega | Pré-requisito |
 |---|---|---|
 | 0 — Base | Documentação consolidada ✅; protótipo apresentado à cliente; respostas de D-010, D-013, D-014, D-015, Q-NEG-02 | — |
-| 1 — Fundação | Projeto Next.js, Supabase (local + produção), login do painel, schema do catálogo com RLS, CI | PR-003 aprovado |
+| 1 — Fundação | Projeto Next.js, Supabase (local + produção), login do painel, schema do catálogo com RLS, CI | D-018 ✅ |
 | 2 — Catálogo e painel | Produtos, variações, kits, imagens, estoque com histórico, vitrine com dados reais | Q-CAT-01, fotos reais |
 | 3 — Checkout | Sacola, frete, reserva de estoque, Mercado Pago, webhooks, pedidos | D-010, Q-PAG-01/03/05, PR-001/002 |
 | 4 — Lançamento | E-mails, acompanhamento do pedido, páginas legais, SEO, acessibilidade, testes E2E | D-015, Q-NEG-02, Q-NEG-03 |
