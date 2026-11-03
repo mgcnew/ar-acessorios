@@ -37,6 +37,8 @@ function initialDark(): boolean {
   try {
     const t = window.localStorage.getItem(THEME_KEY);
     if (t) return t === 'dark';
+    const host = document.documentElement.dataset.theme;
+    if (host === 'dark' || host === 'light') return host === 'dark';
     return !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   } catch {
     return false;

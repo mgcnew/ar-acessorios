@@ -1,15 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
+import logoUrl from '../assets/logo-ar.jpg';
 import { MinusIcon, PlusIcon } from './Icons';
 
-/** Marcador do logo até a arte original da marca ser entregue. */
-export function LogoMark({ logoUrl }: { logoUrl?: string }) {
-  if (logoUrl) return <img className="logo-img" src={logoUrl} alt="AR Acessórios" />;
-  return (
-    <span className="logo-ph">
-      <span>Logo original</span>
-      <span>AR Acessórios</span>
-    </span>
-  );
+/** Logo oficial da marca (D-004), aplicada sobre o próprio fundo preto. */
+export function LogoMark() {
+  return <img className="logo-img" src={logoUrl} alt="AR Acessórios" width={52} height={52} />;
 }
 
 export function SectionHead({ eyebrow, title, id, action }: { eyebrow: string; title: string; id: string; action?: ReactNode }) {

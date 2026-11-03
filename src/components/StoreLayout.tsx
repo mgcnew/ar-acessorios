@@ -5,8 +5,6 @@ import { DEFAULT_FILTERS, useStore } from '../store';
 import { BagIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
 import { LogoMark } from './ui';
 
-/** URL opcional do logo real (VITE_LOGO_URL); sem ela, mostra o marcador. */
-const LOGO_URL = import.meta.env.VITE_LOGO_URL as string | undefined;
 
 type NavKey = 'home' | 'catalog' | 'favs' | 'about';
 
@@ -53,7 +51,7 @@ export function StoreLayout() {
       <header className="hdr">
         <div className="hdr-in">
           <Link className="logo-btn" to="/" aria-label="AR Acessórios — ir para o início">
-            <LogoMark logoUrl={LOGO_URL} />
+            <LogoMark />
           </Link>
           <nav className="nav-d" aria-label="Principal">
             {NAV.map((n) => (
@@ -108,7 +106,7 @@ export function StoreLayout() {
           <div className="foot-g">
             <div>
               <Link className="logo-btn" to="/" aria-label="AR Acessórios — início" style={{ marginBottom: 14 }}>
-                <LogoMark logoUrl={LOGO_URL} />
+                <LogoMark />
               </Link>
               <p>Semijoias delicadas para o dia a dia e para presentear.</p>
             </div>

@@ -58,7 +58,7 @@ Referência visual (`../assets/referencia_visual.png`): inspira hierarquia, card
 | Rotas | `/catalogo`, `/checkout-demo` | `/loja`, `/checkout` | Alinhado com PR-004 |
 | Produtos | 12–18 | 19 (incl. 3 kits) | Ok |
 | Fotos | Próprias ou placeholders | Ilustrações vetoriais por tipo | Trocar por fotos reais quando houver |
-| Logo | Original | Marcador "Logo original" (configurável por `VITE_LOGO_URL`) | Aplicar `../assets/logo_ar_original.jpg` antes de apresentar |
+| Logo | Original | Logo oficial aplicada em círculo preto | Trocar pelo SVG quando houver (D-014) |
 | Painel admin | Fora do brief | Incluído | Serve para validar D-013 com a cliente |
 | Favoritos | Incluído | Incluído | Aprovação para o site real: Q-UX-01 |
 

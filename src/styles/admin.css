@@ -10,7 +10,7 @@
 .adm .side{flex:1 1 100%;background:var(--surf);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 @media (min-width:900px){.adm .side{flex:0 0 250px;border-right:1px solid var(--line);border-bottom:0;padding:26px 20px;min-height:100vh;position:sticky;top:0;align-self:flex-start}}
 .adm .brand{display:flex;align-items:center;gap:12px}
-.adm .logo-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;width:104px;height:42px;background:#141414;border:1px dashed #C89F7A;border-radius:6px;color:#EAD9C6;font-size:9px;letter-spacing:.2em;text-transform:uppercase;line-height:1.35;text-align:center}
+.adm .logo-img{display:block;height:48px;width:48px;border-radius:50%;background:#141414;object-fit:cover}
 .adm .brand small{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);font-weight:500}
 .adm .menu{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 @media (min-width:900px){.adm .menu{flex-direction:column;overflow:visible}}

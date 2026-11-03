@@ -31,4 +31,4 @@ A sacola, os favoritos e o tema noturno ficam salvos no `localStorage` do navega
 - `src/admin/`: painel e dados fictícios dele
 - `src/styles/`: estilos da loja (`.ar`) e do painel (`.adm`)
 
-Logo: defina `VITE_LOGO_URL` para usar o logo real. Sem ele, aparece o marcador "Logo original".
+A logo é a oficial (`src/assets/logo-ar.jpg`). Para gerar a prévia publicável, que navega sem depender do endereço da página: `npm run build:preview` (saída em `dist-preview/`).
