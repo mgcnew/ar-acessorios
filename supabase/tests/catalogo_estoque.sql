@@ -158,11 +158,18 @@ begin
   select count(*) into n from public.inventory_movements where variant_id = brinco and type = 'contagem' and on_hand_delta = -5;
   insert into resultados (teste, ok, detalhe) values ('contagem iguala o saldo e registra a diferença', saldo.on_hand = 4 and n = 1, 'saldo ' || saldo.on_hand);
 
-  insert into resultados (teste, ok, detalhe)
-  select 'kit composto = menor peça (brinco 4, colar 3)', private.disponivel(aurora) = 3, private.disponivel(aurora)::text;
+  select disponivel into n from public.painel_estoque() where variant_id = aurora;
+  insert into resultados (teste, ok, detalhe) values ('kit composto = menor peça (brinco 4, colar 3)', n = 3, n::text);
   perform public.registrar_contagem(colar, 1, 'Contagem');
-  insert into resultados (teste, ok, detalhe)
-  select 'kit composto acompanha a peça que acabou de mudar', private.disponivel(aurora) = 1, private.disponivel(aurora)::text;
+  select disponivel into n from public.painel_estoque() where variant_id = aurora;
+  insert into resultados (teste, ok, detalhe) values ('kit composto acompanha a peça que acabou de mudar', n = 1, n::text);
+
+  begin
+    perform private.disponivel(aurora);
+    insert into resultados (teste, ok) values ('funções internas não são chamáveis pelo site', false);
+  exception when insufficient_privilege then
+    insert into resultados (teste, ok) values ('funções internas não são chamáveis pelo site', true);
+  end;
 
   begin
     perform public.registrar_entrada(aurora, 5, 'Tentativa');
