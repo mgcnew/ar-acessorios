@@ -7,6 +7,8 @@ import { LogoMark } from '../components/ui';
 import { fmt, norm } from '../data/catalog';
 import { useTheme } from '../store';
 import { BotaoSair } from './BotaoSair';
+import { Estoque } from './Estoque';
+import type { LinhaEstoque } from './estoque';
 import {
   ASK_LIST,
   CAN_LIST,
@@ -20,10 +22,11 @@ import {
   type OrderStatus,
 } from './seed';
 
-type View = 'overview' | 'products' | 'orders' | 'perms';
+type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms';
 
 const MENU: { label: string; view: View }[] = [
   { label: 'Visão geral', view: 'overview' },
+  { label: 'Estoque', view: 'stock' },
   { label: 'Produtos', view: 'products' },
   { label: 'Pedidos', view: 'orders' },
   { label: 'Permissões', view: 'perms' },
@@ -41,7 +44,7 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin({ email }: { email: string }) {
+export function Admin({ email, estoque }: { email: string; estoque: LinhaEstoque[] }) {
   const { dark, toggleDark } = useTheme();
   const [view, setView] = useState<View>('overview');
   const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
@@ -86,11 +89,16 @@ export function Admin({ email }: { email: string }) {
       </aside>
       <main className="main">
         <span className="demo" role="note">
-          Demonstração do painel · dados fictícios, nada é salvo de verdade
+          {view === 'stock'
+            ? 'Estoque real do banco de desenvolvimento · as movimentações ficam salvas'
+            : view === 'overview'
+              ? 'Pedidos fictícios · o aviso de estoque usa o estoque real'
+              : 'Demonstração do painel · dados fictícios, nada é salvo de verdade'}
         </span>
         {view === 'overview' && (
-          <Overview prods={prods} orders={orders} goOrders={() => setView('orders')} goProducts={() => setView('products')} />
+          <Overview estoque={estoque} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
         )}
+        {view === 'stock' && <Estoque linhas={estoque} />}
         {view === 'products' && <Products prods={prods} setP={setP} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
@@ -100,30 +108,31 @@ export function Admin({ email }: { email: string }) {
 }
 
 function Overview({
-  prods,
+  estoque,
   orders,
   goOrders,
-  goProducts,
+  goStock,
 }: {
-  prods: AdminProduct[];
+  estoque: LinhaEstoque[];
   orders: AdminOrder[];
   goOrders: () => void;
-  goProducts: () => void;
+  goStock: () => void;
 }) {
-  const low = prods.filter((p) => p.stock <= 2 && !p.derived);
+  // Estoque real: variações com disponível no mínimo ou abaixo (CAT-DEC-021).
+  const low = estoque.filter((l) => l.abaixoDoMinimo).sort((a, b) => a.disponivel - b.disponivel);
   const revenue = orders.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
   const kpis = [
     { label: 'Aguardando pagamento', value: orders.filter((o) => o.status === 'Aguardando pagamento').length, note: 'pedidos' },
     { label: 'Para separar', value: orders.filter((o) => o.status === 'Pago' || o.status === 'Em separação').length, note: 'pedidos pagos' },
     { label: 'Vendas pagas', value: fmt(revenue), note: 'soma ilustrativa' },
-    { label: 'Estoque baixo', value: low.length, note: 'produtos com 2 ou menos' },
+    { label: 'Estoque baixo', value: low.length, note: 'variações no mínimo ou abaixo' },
   ];
 
   return (
     <>
       <div className="top">
         <h1 className="h1">Olá! Veja como está a loja</h1>
-        <p className="sub">Resumo dos pedidos e do estoque (valores ilustrativos).</p>
+        <p className="sub">Resumo dos pedidos (ilustrativos) e do estoque (real).</p>
       </div>
       <div className="kpis">
         {kpis.map((k) => (
@@ -179,15 +188,18 @@ function Overview({
                   </tr>
                 </thead>
                 <tbody>
-                  {low.map((p) => (
-                    <tr key={p.id}>
+                  {low.slice(0, 8).map((l) => (
+                    <tr key={l.variantId}>
                       <td>
-                        {p.name}
-                        <div className="sku">{p.sku}</div>
+                        {l.productName}
+                        <div className="sku">
+                          {l.sku}
+                          {l.atributos && ` · ${l.atributos}`}
+                        </div>
                       </td>
                       <td>
-                        <span className={`tag ${p.stock === 0 ? 't-bad' : 't-warn'}`}>
-                          {p.stock === 0 ? 'Esgotado' : `${p.stock} ${p.stock === 1 ? 'unidade' : 'unidades'}`}
+                        <span className={`tag ${l.disponivel <= 0 ? 't-bad' : 't-warn'}`}>
+                          {l.disponivel <= 0 ? 'Esgotado' : `${l.disponivel} disponíve${l.disponivel === 1 ? 'l' : 'is'}`}
                         </span>
                       </td>
                     </tr>
@@ -196,11 +208,12 @@ function Overview({
               </table>
             </div>
           ) : (
-            <p className="sub">Nenhum produto com estoque baixo.</p>
+            <p className="sub">Nenhuma variação com estoque baixo.</p>
           )}
+          {low.length > 8 && <p className="note" style={{ marginTop: 8 }}>E mais {low.length - 8} na aba Estoque.</p>}
           <div style={{ marginTop: 12 }}>
-            <button className="btn" onClick={goProducts}>
-              Gerenciar produtos
+            <button className="btn" onClick={goStock}>
+              Ver o estoque
             </button>
           </div>
         </section>

@@ -9,9 +9,9 @@
 | Documentação e decisões | Consolidadas em `docs/DECISOES.md` (fonte única) |
 | Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 3 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **32 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
-| Vitrine (Next.js) | **Lê do banco, mas não foi testada no navegador**: a rede da sessão anterior bloqueava o Supabase |
+| Vitrine (Next.js) | Lê do banco e **está no ar na Vercel** (prévia), funcionando com o banco de desenvolvimento |
 | Login do painel | **Escrito, ainda não testado com o login real**: `/admin/entrar`, proteção no servidor (`src/proxy.ts` + `is_admin()` em `/admin`), "Acesso não autorizado" e botão Sair |
-| Painel `/admin` | Só quem é admin entra, mas o conteúdo ainda é a demonstração, com dados fixos de `src/admin/seed.ts`; não salva nada |
+| Painel `/admin` | Aba **Estoque** real (entrada, ajuste, contagem, histórico) e aviso de estoque baixo real na visão geral. Produtos, pedidos e permissões continuam demonstração (`src/admin/seed.ts`). **Testado com banco simulado; falta testar com o banco real** |
 | Pagamento, frete, pedidos | Fora da fase atual |
 
 ## Passo 1 — Preparar a sessão (5 min)
@@ -62,19 +62,19 @@ Falta conferir no navegador, com a rede liberada para o Supabase (só o respons�
 - [ ] Conta que existe no Supabase mas não está em `admin_members` vê "Acesso não autorizado"
 - [ ] **Cadastro público desligado** no Supabase (Authentication → Sign In / Providers → "Allow new users to sign up" desligado). Não consegui conferir daqui. Mesmo ligado, quem se cadastra não é admin e o banco recusa tudo, mas o certo é desligar.
 
-## Passo 4 — Painel de estoque de verdade
+## ~~Passo 4 — Painel de estoque de verdade~~ (escrito; falta testar com o banco real)
 
-Substituir os dados fixos de `src/admin/seed.ts` pelas funções do banco:
+Feito: aba **Estoque** em `/admin` (`src/admin/Estoque.tsx`), com dados de `painel_estoque()` e ações no servidor em `src/app/admin/actions.ts`, que chamam `registrar_entrada/ajuste/contagem()` e leem `inventory_movements`. Cada ação confere a sessão; o banco confere se é admin. Motivo obrigatório; a mensagem de recusa do banco aparece na tela; kit composto mostra a disponibilidade calculada, sem botão. A visão geral usa o estoque real para o aviso de estoque baixo.
 
-| Tela | Fonte no banco |
-|---|---|
-| Lista de estoque por variação, com alerta de mínimo | `painel_estoque()` |
-| Entrada de mercadoria | `registrar_entrada(variação, quantidade, motivo)` |
-| Ajuste (avaria, correção) | `registrar_ajuste(variação, diferença, motivo)` |
-| Contagem física | `registrar_contagem(variação, contado, motivo)` |
-| Histórico de uma variação | tabela `inventory_movements` (só leitura) |
+Já conferido com banco simulado num navegador local: entrada, ajuste, contagem, recusa por estoque insuficiente, histórico, Esc fecha, celular a 390 px sem rolagem lateral, sem erros no console; conta logada que não é admin vê "Acesso não autorizado" e, chamando a ação direto, o banco recusa. No banco real: a recusa por estoque insuficiente funciona (transação desfeita).
 
-Regras: motivo obrigatório; mostrar a mensagem de erro do banco quando ele recusar (ex.: "Estoque insuficiente"); kit composto não tem estoque próprio, então o painel mostra a disponibilidade calculada e manda movimentar as peças.
+Falta conferir na prévia da Vercel, com a senha real:
+- [ ] Aba Estoque lista as 73 variações; kits compostos sem botão
+- [ ] Entrada em um SKU muda o saldo na tela e aparece no histórico como "Você"
+- [ ] Ajuste que deixaria negativo mostra "Estoque insuficiente…" e não muda nada
+- [ ] Depois de uma entrada, a vitrine mostra a variação como disponível (ex.: Argola Lunar Ródio G, hoje esgotada)
+
+**Atenção:** as movimentações de teste ficam no histórico para sempre (CAT-DEC-012). Use motivos como "Teste do painel" e um SKU de demonstração.
 
 Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits e fotos (bucket `produtos` já criado).
 
@@ -86,7 +86,7 @@ Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits
 | Prévia publicada do protótipo (versão antiga, igual no visual) | [prévia](https://claude.ai/artifact/KdvjU6JFDRNuDA94YqAcPQ) |
 | Propostas PR-001 e PR-002 (reserva × Pix; pagamento indefinido) | `docs/DECISOES.md` §6, decidir antes da Fase 3 |
 | Ajustar as cores do modo noturno | pedido do responsável, sem urgência |
-| Teste de dois ajustes simultâneos no mesmo SKU | fazer quando o painel estiver ligado ao banco |
+| Teste de dois ajustes simultâneos no mesmo SKU | **Não foi feito de verdade**: a ferramenta de SQL desta sessão roda uma consulta por vez. Fazer no SQL Editor do Supabase com duas abas: na 1ª, `begin;` + `registrar_ajuste` + `select pg_sleep(10);` + `rollback;`; na 2ª, o mesmo ajuste logo em seguida, que deve esperar a 1ª terminar |
 | Projeto Supabase antigo em Oregon (vazio, sem uso) | o responsável pode apagar |
 
 ## Como pedir na próxima sessão

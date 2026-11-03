@@ -84,3 +84,25 @@
 .adm .err[hidden]{display:none}
 .adm .lbtn{margin-top:18px;justify-content:center;background:var(--ink);color:var(--bg)}
 .adm .lbtn:disabled{opacity:.55;cursor:not-allowed}
+
+/* Estoque: ações, mensagens e janelas de movimentação e histórico */
+.adm .tw{position:relative} /* prende os textos de leitor de tela (.sr-only) dentro da área rolável */
+.adm .acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.adm .ok-msg{background:var(--ok);color:var(--okt);border-radius:14px;padding:10px 14px;font-size:14px;margin-bottom:16px}
+.adm .ok-msg[hidden]{display:none}
+.adm .dlg{border:1px solid var(--line);border-radius:22px;background:var(--surf);color:var(--ink);padding:22px;width:min(calc(100% - 32px),480px);max-height:calc(100dvh - 32px);overflow:auto}
+.adm .dlg.dlg-l{width:min(calc(100% - 32px),860px)}
+.adm .dlg::backdrop{background:rgba(20,14,10,.45)}
+.adm .dlg h2{font-family:var(--serif);font-weight:600;font-size:28px;margin-bottom:6px}
+.adm .dlg .note+.note{margin-top:4px}
+.adm .tipos{border:0;padding:0;margin:16px 0 6px;display:flex;gap:8px;flex-wrap:wrap}
+.adm .tipos legend{font-size:14px;color:var(--ink2);margin-bottom:6px;padding:0}
+.adm .tipos label{cursor:pointer}
+.adm .tipos input{position:absolute;opacity:0;width:1px;height:1px}
+.adm .tipos label:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
+.adm .dlg-acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.adm .dlg-acoes .lbtn{margin-top:0}
+.adm .btn:disabled,.adm .sl:disabled{opacity:.55;cursor:not-allowed}
+/* Estoque no celular: a tabela rola de lado dentro do cartão, sem espremer o nome do produto */
+.adm table.estq{min-width:760px}
+.adm table.estq td:first-child{min-width:200px}

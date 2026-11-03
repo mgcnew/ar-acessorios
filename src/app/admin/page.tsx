@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Admin } from '../../admin/Admin';
 import { BotaoSair } from '../../admin/BotaoSair';
+import { carregarEstoque } from '../../admin/estoqueServidor';
 import { supabaseServidor } from '../../lib/supabase/servidor';
 
 export const metadata: Metadata = { title: 'Painel' };
@@ -33,5 +34,5 @@ export default async function AdminPage() {
     );
   }
 
-  return <Admin email={user.email ?? ''} />;
+  return <Admin email={user.email ?? ''} estoque={await carregarEstoque(supabase)} />;
 }
