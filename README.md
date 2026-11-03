@@ -1,5 +1,7 @@
 # AR Acessórios — loja demonstrativa
 
+> **Documentação do projeto:** comece por [`docs/DECISOES.md`](docs/DECISOES.md) (decisões) e [`docs/DOCUMENTO_MESTRE.md`](docs/DOCUMENTO_MESTRE.md) (visão e plano). Agentes de IA seguem [`AGENTS.md`](AGENTS.md).
+
 Protótipo navegável da loja de semijoias AR Acessórios (React + TypeScript + Vite), feito a partir do design "AR Acessórios — Protótipo". Produtos, preços, pedidos e endereços são fictícios: nenhuma compra é realizada.
 
 ```bash
