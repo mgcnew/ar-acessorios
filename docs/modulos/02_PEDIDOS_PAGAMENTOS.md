@@ -7,7 +7,7 @@
 ## 1. Checkout
 
 - Compra como visitante, sem conta obrigatória (PAY-DEC-004). Quais dados mínimos pedir ainda está em aberto (provavelmente nome, e-mail, telefone, endereço e CPF para nota fiscal e antifraude); depende de D-015 e Q-PAG-06.
-- Pagamento: Pix, crédito (até 6x, juros para o cliente: PAY-DEC-008/012) e débito (PAY-DEC-005), via Mercado Pago (PAY-DEC-003). Sem boleto (PAY-DEC-001).
+- Pagamento: Pix, crédito (até 6x, juros para o cliente: PAY-DEC-008/012) e débito (PAY-DEC-005), provavelmente via Mercado Pago (PAY-DEC-003, em aberto). Sem boleto (PAY-DEC-001).
 - Preço, promoção, frete e total são **sempre recalculados no servidor**; o valor enviado pelo navegador é ignorado.
 - O pedido guarda uma cópia (snapshot) de nome, SKU, preço e endereço do momento da compra.
 - Modalidade de integração (Checkout Pro, Bricks ou API): em aberto (Q-PAG-05). Antes de decidir, confirmar na documentação atual do Mercado Pago: débito online, prazo configurável do Pix (PAY-DEC-009) e parcelamento.

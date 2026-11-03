@@ -13,7 +13,7 @@ Loja virtual **própria** da AR Acessórios: semijoias e acessórios, venda ao c
 
 ### 2.1 Lançamento (MVP)
 - Vitrine: início, categorias, busca, página de produto com variações (D-011) e kits (CAT-DEC-003/004).
-- Sacola e checkout como visitante (PAY-DEC-004), com endereço, frete (D-010, em aberto) e pagamento por Pix ou cartão via Mercado Pago (PAY-DEC-001/003/005).
+- Sacola e checkout como visitante (PAY-DEC-004), com endereço, frete (D-010, em aberto) e pagamento por Pix ou cartão (PAY-DEC-001/005); provedor em aberto, provavelmente Mercado Pago (PAY-DEC-003).
 - Confirmação do pedido somente após pagamento validado no servidor (CAT-DEC-010).
 - Painel: produtos, variações, imagens, categorias, estoque com histórico, pedidos e atualização de separação/envio.
 - Páginas legais: termos, privacidade, trocas e devoluções; canal de atendimento.
@@ -46,7 +46,7 @@ Marketplace com vendedores terceiros, atacado, programa de pontos, aplicativo na
 
 ## 5. Arquitetura
 
-**Stack:** PR-003 (Next.js + TypeScript + Tailwind + Supabase na Vercel), condicionada a Q-NEG-01.
+**Stack:** desenvolvimento próprio (D-016); proposta em PR-003 (Next.js + TypeScript + Tailwind + Supabase na Vercel).
 
 **Princípios** (valem para qualquer stack):
 1. Uma única loja: sem `tenant_id`, sem multi-loja.
@@ -100,8 +100,8 @@ Marketplace com vendedores terceiros, atacado, programa de pontos, aplicativo na
 
 | Fase | Entrega | Pré-requisito |
 |---|---|---|
-| 0 — Base | Documentação consolidada ✅; protótipo apresentado à cliente; respostas de Q-NEG-01, D-010, D-013, D-014, D-015, Q-NEG-02 | — |
-| 1 — Fundação | Projeto Next.js, Supabase (local + produção), login do painel, schema do catálogo com RLS, CI | Q-NEG-01, PR-003 aprovados |
+| 0 — Base | Documentação consolidada ✅; protótipo apresentado à cliente; respostas de D-010, D-013, D-014, D-015, Q-NEG-02 | — |
+| 1 — Fundação | Projeto Next.js, Supabase (local + produção), login do painel, schema do catálogo com RLS, CI | PR-003 aprovado |
 | 2 — Catálogo e painel | Produtos, variações, kits, imagens, estoque com histórico, vitrine com dados reais | Q-CAT-01, fotos reais |
 | 3 — Checkout | Sacola, frete, reserva de estoque, Mercado Pago, webhooks, pedidos | D-010, Q-PAG-01/03/05, PR-001/002 |
 | 4 — Lançamento | E-mails, acompanhamento do pedido, páginas legais, SEO, acessibilidade, testes E2E | D-015, Q-NEG-02, Q-NEG-03 |

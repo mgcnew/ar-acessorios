@@ -21,6 +21,8 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | D-004 | Marca AR Acessórios; logotipo fornecido (monograma AR dourado, emblema circular com pérolas e ramos, fundo preto) usado sem redesenho. | Decidido | Arquivo vetorial (SVG), versões monocromáticas, favicon (ver D-014) |
 | D-005 | Desenvolvimento com Claude (principal) e Codex (apoio). | Decidido | — |
 | D-006 | Infraestrutura: Supabase e Vercel. | Decidido | — |
+| D-016 | **Desenvolvimento próprio**, sem plataforma pronta (Nuvemshop, Shopify etc.). Decidido em 03/11/2026. *(Resolve Q-NEG-01.)* | Decidido | Stack (PR-003) |
+| D-017 | O lançamento inclui **painel de controle para gerenciar o estoque**. Pagamento real pode vir depois; até lá o checkout continua demonstrativo. Decidido em 03/11/2026. | Decidido | — |
 | CAT-DEC-001 | Tipos comercializados: Brincos, Colares, Pulseiras, Anéis, Tornozeleiras e Piercings. São tipos de produto, não necessariamente seis categorias fixas. | Decidido | Hierarquia de categorias |
 
 ## 2. Catálogo e estoque (detalhes: `modulos/01_CATALOGO_ESTOQUE.md`)
@@ -55,7 +57,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 |---|---|---|---|
 | PAY-DEC-001 | Meios no lançamento: Pix e cartão. Boleto fora. | Decidido | — |
 | PAY-DEC-002 | Pagamentos tardios e falhas de conciliação são tratados no Módulo 02, sem estorno nem liberação automáticos. | Decidido | — |
-| PAY-DEC-003 | Provedor: Mercado Pago. | Decidido | Modalidade de integração (Q-PAG-05) |
+| PAY-DEC-003 | Provedor de pagamento. **Reaberto em 03/11/2026:** Mercado Pago é o mais provável, mas ainda não está decidido. | Em aberto | Escolha do provedor; modalidade de integração (Q-PAG-05) |
 | PAY-DEC-004 | Compra como visitante permitida; conta não obrigatória. *(Unifica D-008.)* | Decidido | Dados mínimos pedidos ao visitante |
 | PAY-DEC-005 | Cartão de crédito e de débito no lançamento. *(Unifica D-009.)* | Decidido | Confirmar que a integração escolhida aceita débito online |
 | PAY-DEC-006 | Pagamento confirmado **depois** de a reserva expirar vai para análise administrativa. Nada automático (nem atender, nem reembolsar). | Decidido | Fluxo da análise (Q-PAG-02) |
@@ -81,7 +83,6 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 
 | ID | Pergunta | Quem responde |
 |---|---|---|
-| Q-NEG-01 | **Construir do zero (Next.js + Supabase) ou usar plataforma pronta (ex.: Nuvemshop, Shopify)?** Plataformas já trazem frete, nota fiscal, Mercado Pago e estoque. Desenvolvimento próprio precisa de uma razão registrada. | Responsável + cliente |
 | D-010 | Frete: CEP de origem, regiões atendidas, transportadoras/serviço de cálculo, frete grátis, retirada local, prazo de postagem. | Cliente |
 | D-015 | Fiscal e legal: CNPJ, emissão de nota fiscal, termos de compra, política de privacidade (LGPD). | Cliente |
 | Q-NEG-02 | Trocas, devoluções e garantia das semijoias. **Obs.:** o direito de arrependimento em 7 dias para compras online (CDC, art. 49) é obrigação legal, não opção. | Cliente |
@@ -127,7 +128,7 @@ Recomendações para destravar o que está em aberto. **Nenhuma vale até ser ap
 |---|---|---|
 | PR-001 | Reserva de estoque **mais longa que a cobrança Pix** (ex.: Pix 15 min, reserva 30 min). **Altera CAT-DEC-014.** | Com os dois em 15 min, quem paga no último minuto cai sempre em "pagamento tardio" (PAY-DEC-006), e a exceção vira rotina. |
 | PR-002 | Pagamento indefinido: manter a reserva por até **N horas** (ex.: 24 h) com as retentativas da PAY-DEC-010; ao fim, liberar o estoque e marcar o pedido para revisão manual. | Resolve Q-PAG-03 sem bloquear estoque indefinidamente nem liberar às cegas. |
-| PR-003 | Stack: Next.js (App Router) + TypeScript + Tailwind + Supabase (Postgres, Auth, Storage). *(Antigo D-007.)* | Encaixa com Vercel e Supabase (D-006). Depende de Q-NEG-01. |
+| PR-003 | Stack: Next.js (App Router) + TypeScript + Tailwind + Supabase (Postgres, Auth, Storage). *(Antigo D-007.)* | Encaixa com Vercel e Supabase (D-006). Desenvolvimento próprio já decidido (D-016). |
 | PR-004 | Rotas em português, únicas para demo e site real: `/`, `/loja`, `/loja/[categoria]`, `/produto/[slug]`, `/favoritos`, `/sacola`, `/checkout`, `/pedido/[codigo]`, `/sobre`, `/contato`, `/trocas-e-devolucoes`, `/privacidade`, `/termos`, `/admin`. | Hoje Mestre, brief e protótipo usam rotas diferentes. |
 | PR-005 | SKU no formato `AR-<TIPO><NNN>-<ATRIBUTOS>` (ex.: `AR-BRC002-OURO-P`), imutável depois da primeira movimentação ou pedido. | Já usado no protótipo; dá rastreabilidade. |
 | PR-006 | Estados do pedido: `aguardando_pagamento`, `em_conciliacao`, `pago`, `em_separacao`, `enviado`, `entregue`, `cancelado`, `reembolsado`. Estados do pagamento seguem os do Mercado Pago. | Inclui o estado "em conciliação" exigido pela PAY-DEC-007, que faltava na lista anterior. |
