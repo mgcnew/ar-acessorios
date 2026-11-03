@@ -70,3 +70,17 @@
 .adm .note{font-size:13.5px;color:var(--ink2)}
 .adm .btn{display:inline-flex!important;align-items:center;min-height:44px;padding:0 20px!important;border-radius:999px;border:1px solid var(--ink)!important;font-size:14px}
 @media (prefers-reduced-motion:reduce){.adm *{transition:none!important}}
+
+/* Login e acesso não autorizado do painel */
+.adm.adm-login{align-items:center;justify-content:center;padding:24px}
+.adm .login{width:min(100%,420px);display:flex;flex-direction:column;gap:6px}
+.adm .login h1{font-family:var(--serif);font-weight:600;font-size:34px;margin-top:6px}
+.adm .login .brand{margin-bottom:6px}
+.adm .login form{display:flex;flex-direction:column}
+.adm .lf{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.adm .lf label{font-size:14px;color:var(--ink2)}
+.adm .lf input{height:46px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:inherit;padding:0 18px;width:100%}
+.adm .err{margin-top:14px;background:var(--bad);color:var(--badt);border-radius:14px;padding:10px 14px;font-size:14px}
+.adm .err[hidden]{display:none}
+.adm .lbtn{margin-top:18px;justify-content:center;background:var(--ink);color:var(--bg)}
+.adm .lbtn:disabled{opacity:.55;cursor:not-allowed}

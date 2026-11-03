@@ -10,7 +10,8 @@
 | Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 3 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **32 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
 | Vitrine (Next.js) | **Lê do banco, mas não foi testada no navegador**: a rede da sessão anterior bloqueava o Supabase |
-| Painel `/admin` | Ainda é a demonstração, com dados fixos de `src/admin/seed.ts`; não salva nada |
+| Login do painel | **Escrito, ainda não testado com o login real**: `/admin/entrar`, proteção no servidor (`src/proxy.ts` + `is_admin()` em `/admin`), "Acesso não autorizado" e botão Sair |
+| Painel `/admin` | Só quem é admin entra, mas o conteúdo ainda é a demonstração, com dados fixos de `src/admin/seed.ts`; não salva nada |
 | Pagamento, frete, pedidos | Fora da fase atual |
 
 ## Passo 1 — Preparar a sessão (5 min)
@@ -48,12 +49,18 @@ Conferir em http://localhost:3000, no computador e no celular (390 px):
 
 Se algo falhar, a leitura está em `src/data/loja.ts`.
 
-## Passo 3 — Login do painel
+## ~~Passo 3 — Login do painel~~ (escrito; falta testar com a senha real)
 
-- Usar `@supabase/ssr` (já instalado): cliente no navegador para o login e cliente no servidor com cookies.
-- Tela de login em `/admin/entrar` (e-mail e senha). Sem cadastro: o cadastro público deve estar desligado no Supabase.
-- Proteger `/admin` no servidor: sem sessão vai para o login; com sessão de quem não é admin (`is_admin()` falso), mostrar "acesso não autorizado".
-- Botão "Sair".
+Feito: `@supabase/ssr` com cliente do navegador (`src/lib/supabase/navegador.ts`) e do servidor (`servidor.ts`); `src/proxy.ts` renova a sessão e manda quem não está logado para `/admin/entrar`; `/admin` confirma `is_admin()` no banco e mostra "Acesso não autorizado" para quem não é admin; botão Sair.
+
+Já conferido: sem sessão, `/admin` redireciona para o login (307) e o login abre; `is_admin()` dá verdadeiro para o admin cadastrado e falso para outro usuário.
+
+Falta conferir no navegador, com a rede liberada para o Supabase (só o responsável tem a senha):
+- [ ] Entrar com `acess.ar05@gmail.com` abre o painel e mostra "Conectado como …"
+- [ ] Senha errada mostra "E-mail ou senha incorretos."
+- [ ] Sair volta ao login, e `/admin` deixa de abrir sem entrar de novo
+- [ ] Conta que existe no Supabase mas não está em `admin_members` vê "Acesso não autorizado"
+- [ ] **Cadastro público desligado** no Supabase (Authentication → Sign In / Providers → "Allow new users to sign up" desligado). Não consegui conferir daqui. Mesmo ligado, quem se cadastra não é admin e o banco recusa tudo, mas o certo é desligar.
 
 ## Passo 4 — Painel de estoque de verdade
 

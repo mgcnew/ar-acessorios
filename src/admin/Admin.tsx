@@ -6,6 +6,7 @@ import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
 import { LogoMark } from '../components/ui';
 import { fmt, norm } from '../data/catalog';
 import { useTheme } from '../store';
+import { BotaoSair } from './BotaoSair';
 import {
   ASK_LIST,
   CAN_LIST,
@@ -40,7 +41,7 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin() {
+export function Admin({ email }: { email: string }) {
   const { dark, toggleDark } = useTheme();
   const [view, setView] = useState<View>('overview');
   const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
@@ -77,6 +78,10 @@ export function Admin() {
           <button className="sl" onClick={toggleDark} aria-pressed={dark}>
             {dark ? 'Modo claro' : 'Modo noturno'}
           </button>
+          <p className="note" title={email}>
+            Conectado como {email}
+          </p>
+          <BotaoSair className="sl" />
         </div>
       </aside>
       <main className="main">
