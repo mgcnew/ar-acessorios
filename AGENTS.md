@@ -3,6 +3,7 @@
 Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque próprio, sem vendedores terceiros).
 
 ## Antes de qualquer tarefa
+0. Leia [`docs/CONTINUAR_AQUI.md`](docs/CONTINUAR_AQUI.md): diz onde a última sessão parou e o próximo passo. Atualize-o no fim da sessão.
 1. Leia [`docs/DECISOES.md`](docs/DECISOES.md). É a **única** fonte de decisões.
 2. Leia o documento da área afetada:
    - visão, escopo, arquitetura: [`docs/DOCUMENTO_MESTRE.md`](docs/DOCUMENTO_MESTRE.md)
