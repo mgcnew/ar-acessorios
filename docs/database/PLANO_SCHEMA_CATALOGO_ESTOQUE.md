@@ -8,8 +8,8 @@
 
 | Item | Proposta |
 |---|---|
-| Projeto | Novo projeto `ar-acessorios-dev` na organização "Markplace ar", região **São Paulo (sa-east-1)**, plano gratuito |
-| Por que um novo | O projeto existente está vazio e fica em Oregon (EUA). A região não muda depois de criada, e São Paulo deixa cada consulta da loja cerca de 150 ms mais rápida para clientes no Brasil. O plano gratuito permite 2 projetos ativos; o antigo pode ser apagado por você depois |
+| Projeto | `ar-acessorios-dev` (ref `pmhipriryqsblhonysay`), organização "Markplace ar", região **São Paulo (sa-east-1)**, plano gratuito. **Criado em 03/11/2026, ainda sem tabelas** |
+| Por que um novo | O projeto anterior fica em Oregon (EUA) e a região não muda depois de criada. Decidido em 03/11/2026: banco no Brasil. O projeto de Oregon está vazio e não é usado |
 | Produção | Outro projeto, criado só no lançamento (deploy de produção não está autorizado) |
 | Migrações | Arquivos SQL versionados em `supabase/migrations/`, aplicados em ordem; nenhuma destrutiva |
 
