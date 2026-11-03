@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { EmptyState, PageHead } from '../components/ui';
-import { productById } from '../data/catalog';
+import { useCatalogo } from '../data/CatalogoContext';
 import { useStore } from '../store';
 
 export function Favorites() {
   const { favs } = useStore();
-  const items = favs.map((id) => productById[id]).filter(Boolean);
+  const { byId } = useCatalogo();
+  const items = favs.map((id) => byId[id]).filter(Boolean);
   const label =
     items.length === 0 ? 'Você ainda não marcou nenhuma peça' : items.length === 1 ? '1 peça salva' : `${items.length} peças salvas`;
 

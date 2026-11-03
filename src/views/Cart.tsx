@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { Art } from '../components/Art';
 import { BagIcon, TrashIcon } from '../components/Icons';
 import { EmptyState, PageHead, Stepper } from '../components/ui';
-import { artOf, fmt, productById, type ArtProps, type Product, type Variant } from '../data/catalog';
+import { useCatalogo } from '../data/CatalogoContext';
+import { artOf, fmt, type ArtProps, type Product, type Variant } from '../data/catalog';
 import { MAX_QTY, useStore, type CartLine } from '../store';
 
 interface ResolvedLine {
@@ -19,9 +20,10 @@ interface ResolvedLine {
 /** Itens da sacola com produto, variante e totais resolvidos. */
 function useCartLines() {
   const { cart } = useStore();
+  const { byId } = useCatalogo();
   const lines: ResolvedLine[] = [];
   for (const line of cart) {
-    const product = productById[line.pid];
+    const product = byId[line.pid];
     const variant = product?.variants.find((v) => v.key === line.vkey);
     if (product && variant) lines.push({ line, product, variant, art: artOf(product, variant), total: variant.price * line.qty });
   }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, type ReactElement, type ReactNode } from 'react';
-import { CATEGORIES } from '../data/catalog';
+import { useCatalogo } from '../data/CatalogoContext';
 import { catalogHref } from '../data/catalogQuery';
 import { useStore } from '../store';
 import { BagIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
@@ -30,6 +30,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { dark, toggleDark, favs, cart, toast, clearDemo } = useStore();
+  const { categories } = useCatalogo();
   const [search, setSearch] = useState('');
   const active = activeNav(pathname);
   const cartCount = cart.reduce((s, l) => s + l.qty, 0);
@@ -99,7 +100,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             <div>
               <h4>Loja</h4>
               <ul>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <li key={c.id}>
                     <Link href={catalogHref({ cat: c.id })}>{c.name}</Link>
                   </li>

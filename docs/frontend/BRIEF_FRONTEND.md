@@ -56,7 +56,7 @@ Referência visual (`../assets/referencia_visual.png`): inspira hierarquia, card
 |---|---|---|---|
 | Stack | Next.js + Tailwind sugerido | Next.js + React + TypeScript + CSS próprio | Migrado em 03/11/2026 (D-018) |
 | Rotas | `/catalogo`, `/checkout-demo` | `/loja`, `/loja/[categoria]`, `/produto/[slug]`, `/checkout` | Alinhado com PR-004; filtros no endereço (`?q=`, `?ordem=`, `?disponiveis=1`) |
-| Produtos | 12–18 | 19 (incl. 3 kits) | Ok |
+| Produtos | 12–18 | 19 (incl. 3 kits), lidos do banco de desenvolvimento | Ok |
 | Fotos | Próprias ou placeholders | Ilustrações vetoriais por tipo | Trocar por fotos reais quando houver |
 | Logo | Original | Logo oficial aplicada em círculo preto | Trocar pelo SVG quando houver (D-014) |
 | Painel admin | Fora do brief | Incluído | Serve para validar D-013 com a cliente |

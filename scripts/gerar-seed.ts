@@ -3,7 +3,8 @@
 // Os dados são de demonstração: nada aqui é produto, preço ou estoque real da cliente.
 
 import { writeFileSync } from 'node:fs';
-import { CATEGORIES, PRODUCTS, productById, type Product } from '../src/data/catalog.ts';
+import { DEMO_CATEGORIES as CATEGORIES, PRODUCTS, productById } from '../src/data/demo-catalog.ts';
+import type { Product } from '../src/data/catalog.ts';
 
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
 

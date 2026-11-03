@@ -2,13 +2,14 @@ import Link from 'next/link';
 import { Art } from '../components/Art';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead } from '../components/ui';
-import { CATEGORIES, CATEGORY_TONES, cheapestVariant, fmt, isAvailable, PRODUCTS } from '../data/catalog';
+import { artCatOf, CATEGORY_TONE, cheapestVariant, fmt, isAvailable } from '../data/catalog';
+import type { Catalogo } from '../data/loja';
 import { catalogHref } from '../data/catalogQuery';
 
-export function Home() {
-  const newest = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
-  const best = PRODUCTS.filter((p) => p.best).slice(0, 4);
-  const kits = PRODUCTS.filter((p) => p.isKit);
+export function Home({ catalogo: { categories, products } }: { catalogo: Catalogo }) {
+  const newest = products.filter((p) => p.isNew).slice(0, 4);
+  const best = products.filter((p) => p.best).slice(0, 4);
+  const kits = products.filter((p) => p.isKit);
 
   return (
     <div className="fade">
@@ -48,10 +49,10 @@ export function Home() {
       <section className="wrap sec" aria-labelledby="h-cats">
         <SectionHead eyebrow="Navegue por categoria" title="Escolha o seu estilo" id="h-cats" />
         <div className="ctiles">
-          {CATEGORIES.map((c, i) => (
+          {categories.map((c, i) => (
             <Link key={c.id} className="ctile" href={catalogHref({ cat: c.id })} aria-label={`Ver ${c.name}`}>
               <div className="ctile-i">
-                <Art cat={c.id} tone={CATEGORY_TONES[i]} gem bg={i % 4} />
+                <Art cat={artCatOf(c.id)} tone={CATEGORY_TONE[c.id] ?? 'gold'} gem bg={i % 4} />
               </div>
               <span>{c.name}</span>
             </Link>

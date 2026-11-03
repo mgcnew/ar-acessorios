@@ -6,7 +6,8 @@ import { Art } from '../components/Art';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
-import { artOf, categoryLabel, fmt, productById, PRODUCTS, type Product } from '../data/catalog';
+import { useCatalogo } from '../data/CatalogoContext';
+import { artOf, categoryLabel, fmt, type Product } from '../data/catalog';
 import { MAX_QTY, useStore } from '../store';
 
 const GALLERY = [
@@ -18,19 +19,22 @@ const GALLERY = [
 
 const KIND_TEXT: Record<Product['kind'], string> = {
   simple: 'Peça avulsa',
-  kit_stocked: 'Kit com estoque próprio (representação visual)',
-  kit_composed: 'Kit composto por SKUs (representação visual)',
+  kit_stocked: 'Conjunto',
+  kit_composed: 'Conjunto',
 };
 
-function relatedTo(p: Product): Product[] {
-  const sameCat = PRODUCTS.filter((x) => x.id !== p.id && !x.isKit && x.catIds.some((c) => p.catIds.includes(c))).slice(0, 4);
+const UNIT_SHORT: Record<Product['unit'], string> = { par: 'par', unidade: 'un.', conjunto: 'conjunto' };
+
+function relatedTo(p: Product, all: Product[]): Product[] {
+  const sameCat = all.filter((x) => x.id !== p.id && !x.isKit && x.catIds.some((c) => p.catIds.includes(c))).slice(0, 4);
   if (sameCat.length >= 4) return sameCat;
-  const rest = PRODUCTS.filter((x) => x.id !== p.id && !x.isKit && !sameCat.includes(x)).slice(0, 4 - sameCat.length);
+  const rest = all.filter((x) => x.id !== p.id && !x.isKit && !sameCat.includes(x)).slice(0, 4 - sameCat.length);
   return [...sameCat, ...rest];
 }
 
 export function ProductPage({ productId }: { productId: string }) {
-  const p = productById[productId];
+  const { byId, products } = useCatalogo();
+  const p = byId[productId];
   const { favs, toggleFav, addToCart, showToast } = useStore();
   const [sel, setSel] = useState<string[]>(() => (p.variants.find((v) => v.avail) ?? p.variants[0]).vals);
   const [qty, setQty] = useState(1);
@@ -39,7 +43,6 @@ export function ProductPage({ productId }: { productId: string }) {
   const cur = p.variants.find((v) => v.key === sel.join('|')) ?? p.variants[0];
   const isFav = favs.includes(p.id);
   const unitWord = p.unit;
-  const derivedTxt = p.derived !== null ? `${p.derived} ${p.derived === 1 ? 'conjunto' : 'conjuntos'}` : '';
   const art = artOf(p, cur);
 
   const details = [
@@ -156,29 +159,20 @@ export function ProductPage({ productId }: { productId: string }) {
             {isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           </button>
 
-          {p.isKit && (
+          {/* Composição do conjunto, sem quantidades em estoque (CAT-DEC-024). */}
+          {p.comps && p.comps.length > 0 && (
             <div className="comp">
-              <h3>{p.kind === 'kit_stocked' ? 'Kit com estoque próprio' : 'Kit composto'}</h3>
-              <p className="note" style={{ marginBottom: 8 }}>
-                {p.kind === 'kit_stocked'
-                  ? `Kit com estoque próprio: ${p.kitStock} conjuntos em estoque (representação visual da demonstração).`
-                  : `Disponibilidade derivada do componente limitante: ${derivedTxt} (demonstração).`}
-              </p>
-              {p.comps && (
-                <ul>
-                  {p.comps.map((c) => {
-                    const ref = productById[c.ref];
-                    return (
-                      <li key={c.ref}>
-                        <span>
-                          {ref.name} · {c.qty} {ref.unit === 'par' ? 'par' : 'un.'}
-                        </span>
-                        <span>{c.stock} em estoque (demo)</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <h3>O que vem no conjunto</h3>
+              <ul>
+                {p.comps.map((c) => (
+                  <li key={c.ref}>
+                    <span>{c.name}</span>
+                    <span>
+                      {c.qty} {UNIT_SHORT[c.unit]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
@@ -195,7 +189,7 @@ export function ProductPage({ productId }: { productId: string }) {
 
       <section className="sec" style={{ paddingTop: 20 }} aria-labelledby="h-rel">
         <SectionHead eyebrow="Combina com" title="Você também pode gostar" id="h-rel" />
-        <ProductGrid products={relatedTo(p)} />
+        <ProductGrid products={relatedTo(p, products)} />
       </section>
     </div>
   );

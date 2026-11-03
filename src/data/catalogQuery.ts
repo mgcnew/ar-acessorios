@@ -1,4 +1,4 @@
-import { isAvailable, minPrice, norm, catName, PRODUCTS, type CategoryId, type Product } from './catalog';
+import { isAvailable, minPrice, norm, type CategoryId, type Product } from './catalog';
 
 /** Ordenações do catálogo, com o valor que aparece no endereço (?ordem=). */
 export const SORTS = [
@@ -36,12 +36,12 @@ export function catalogHref({ cat = 'all', q = '', sort = 'relevancia', onlyAvai
   return `/loja${cat === 'all' ? '' : `/${cat}`}${qs ? `?${qs}` : ''}`;
 }
 
-export function filterProducts({ cat, q, sort, onlyAvail }: CatalogQuery): Product[] {
-  let list = PRODUCTS.filter((p) => cat === 'all' || p.catIds.includes(cat));
+export function filterProducts(products: Product[], { cat, q, sort, onlyAvail }: CatalogQuery): Product[] {
+  let list = products.filter((p) => cat === 'all' || p.catIds.includes(cat));
   const nq = norm(q.trim());
   if (nq) {
     list = list.filter((p) =>
-      norm(`${p.name} ${p.desc} ${p.catIds.map((c) => catName[c]).join(' ')}${p.isKit ? ' kit' : ''}`).includes(nq),
+      norm(`${p.name} ${p.desc} ${p.catNames.join(' ')}${p.isKit ? ' kit' : ''}`).includes(nq),
     );
   }
   if (onlyAvail) list = list.filter(isAvailable);
@@ -53,5 +53,5 @@ export function filterProducts({ cat, q, sort, onlyAvail }: CatalogQuery): Produ
   return sorted;
 }
 
-export const countInCategory = (cat: CategoryId | 'all') =>
-  PRODUCTS.filter((p) => cat === 'all' || p.catIds.includes(cat)).length;
+export const countInCategory = (products: Product[], cat: CategoryId | 'all') =>
+  products.filter((p) => cat === 'all' || p.catIds.includes(cat)).length;

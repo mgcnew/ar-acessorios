@@ -5,15 +5,16 @@ import { useEffect, useState } from 'react';
 import { FilterIcon, SearchIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { EmptyState, PageHead } from '../components/ui';
-import { CATEGORIES, type CategoryId } from '../data/catalog';
+import { useCatalogo } from '../data/CatalogoContext';
+import type { CategoryId } from '../data/catalog';
 import { catalogHref, countInCategory, filterProducts, readQuery, SORTS, type CatalogQuery, type SortValue } from '../data/catalogQuery';
-
-const CAT_OPTIONS: { id: CategoryId | 'all'; name: string }[] = [{ id: 'all', name: 'Todas' }, ...CATEGORIES];
 
 /** Catálogo: categoria vem do caminho (/loja/brincos); busca, ordem e disponibilidade, do endereço. */
 export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
   const router = useRouter();
   const params = useSearchParams();
+  const { categories, products } = useCatalogo();
+  const CAT_OPTIONS: { id: CategoryId | 'all'; name: string }[] = [{ id: 'all', name: 'Todas' }, ...categories];
   const query = readQuery(cat, new URLSearchParams(params.toString()));
   const [filterOpen, setFilterOpen] = useState(false);
   // A busca digitada responde na hora; o endereço é atualizado logo em seguida.
@@ -27,8 +28,8 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
     router.replace('/loja', { scroll: false });
   };
 
-  const results = filterProducts({ ...query, q });
-  const title = cat === 'all' ? 'Todas as peças' : CATEGORIES.find((c) => c.id === cat)!.name;
+  const results = filterProducts(products, { ...query, q });
+  const title = cat === 'all' ? 'Todas as peças' : (categories.find((c) => c.id === cat)?.name ?? 'Loja');
 
   return (
     <div className="wrap fade">
@@ -54,7 +55,7 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
                 <label key={c.id} className="opt">
                   <input type="radio" name="fcat" checked={cat === c.id} onChange={() => go({ cat: c.id })} />
                   <span>{c.name}</span>
-                  <small>{countInCategory(c.id)}</small>
+                  <small>{countInCategory(products, c.id)}</small>
                 </label>
               ))}
             </div>

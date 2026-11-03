@@ -24,14 +24,17 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 ## Estado atual (03/11/2026)
 - Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
 - Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
-- O site **ainda usa o catálogo fictício de `src/data/catalog.ts`**. Próximo passo: vitrine lendo do banco; depois login e painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
+- A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. **Ainda não testada no navegador contra o banco**: a rede da sessão bloqueava o Supabase. Próximo passo: testar a vitrine; depois login e painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
+- O painel (`/admin`) ainda é a demonstração com dados fixos de `src/admin/seed.ts`.
 - Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`.
 - Regras que a interface deve respeitar: o visitante vê só disponível sim/não, nunca quantidade (CAT-DEC-024); kit composto não tem saldo próprio (CAT-DEC-019).
 
 ## Estrutura
 - `src/app/` — rotas do Next.js. `(loja)/` agrupa as páginas da vitrine; `admin/` é o painel.
 - `src/views/` — conteúdo de cada página (não use `src/pages/`: o Next.js reserva esse nome).
-- `src/components/` — peças reutilizáveis. `src/data/` — catálogo fictício e filtros. `src/store.tsx` — sacola, favoritos e tema.
+- `src/components/` — peças reutilizáveis. `src/store.tsx` — sacola, favoritos e tema.
+- `src/data/` — `catalog.ts` (tipos e funções de apoio), `loja.ts` (catálogo lido do banco, só no servidor), `CatalogoContext.tsx` (entrega o catálogo às telas), `catalogQuery.ts` (filtros), `demo-catalog.ts` (dados fictícios, usado só por `scripts/gerar-seed.ts`).
+- `src/lib/` — cliente do Supabase e tipos do banco (`database.types.ts`, gerado: atualize depois de cada migração).
 - `src/styles/` — CSS da loja (escopo `.ar`) e do painel (escopo `.adm`).
 
 ## Comandos
