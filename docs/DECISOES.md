@@ -24,6 +24,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | D-016 | **Desenvolvimento próprio**, sem plataforma pronta (Nuvemshop, Shopify etc.). Decidido em 03/11/2026. *(Resolve Q-NEG-01.)* | Decidido | Stack (PR-003) |
 | D-018 | Stack: **Next.js (App Router) + React + TypeScript + Supabase** (Postgres, Auth, Storage) na Vercel. Estilos: o CSS do protótipo, sem Tailwind. Decidido em 03/11/2026. *(Aprova PR-003, exceto Tailwind.)* | Decidido | — |
 | D-017 | O lançamento inclui **painel de controle para gerenciar o estoque**. Pagamento real pode vir depois; até lá o checkout continua demonstrativo. Decidido em 03/11/2026. | Decidido | — |
+| D-019 | Banco de desenvolvimento no Supabase em **São Paulo** (`ar-acessorios-dev`). Decidido em 03/11/2026. | Decidido | — |
 | CAT-DEC-001 | Tipos comercializados: Brincos, Colares, Pulseiras, Anéis, Tornozeleiras e Piercings. São tipos de produto, não necessariamente seis categorias fixas. | Decidido | Hierarquia de categorias |
 
 ## 2. Catálogo e estoque (detalhes: `modulos/01_CATALOGO_ESTOQUE.md`)
@@ -31,6 +32,9 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | ID | Decisão | Estado | Falta definir |
 |---|---|---|---|
 | D-011 | Produtos têm variações. Atributos possíveis: banho/acabamento, tamanho, material, cor e modelo. Nem todo atributo vale para todo produto; só existem as combinações cadastradas. | Decidido | Quais atributos se aplicam a cada tipo |
+| CAT-DEC-022 | Atributos da variação guardados como lista chave → valor, aceitando só as chaves da D-011 (`banho`, `tamanho`, `material`, `cor`, `modelo`). Decidido em 03/11/2026. | Decidido | — |
+| CAT-DEC-023 | Marcadores **Novo** e **Destaque** definidos à mão no painel; alimentam "Lançamentos" e "Mais vendidos" da home até haver vendas reais. Decidido em 03/11/2026. | Decidido | — |
+| CAT-DEC-024 | O visitante vê só se a variação está **disponível ou não**, nunca a quantidade. Decidido em 03/11/2026. | Decidido | Mensagem de "últimas unidades" |
 | CAT-DEC-002 | Venda por unidade, par ou conjunto, conforme o produto. | Decidido | Unidade de cada produto |
 | CAT-DEC-003 | Kits e conjuntos à venda desde o lançamento. | Decidido | — |
 | CAT-DEC-004 | Dois modelos de kit: (a) **kit com estoque próprio**; (b) **kit composto**, cuja disponibilidade vem do estoque das peças. | Decidido | Baixa e reposição por modelo; o que fazer quando um componente muda |
@@ -46,7 +50,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | CAT-DEC-014 | Reserva dura 15 minutos. | Decidido | Ver proposta PR-001 |
 | CAT-DEC-015 | Reserva expirada é liberada automaticamente **só depois de verificar o estado do pagamento**. Estado desconhecido não libera às cegas. | Decidido | Ver Q-PAG-03 (conflito com PAY-DEC-007) |
 | CAT-DEC-016 | Um produto pode estar em várias categorias. | Decidido | — |
-| CAT-DEC-017 | SKU único por variante vendável, inclusive kits. | Decidido | Regra de geração e edição do SKU (ver PR-005) |
+| CAT-DEC-017 | SKU único por variante vendável, inclusive kits. SKU editável enquanto PR-005 não for aprovada (03/11/2026). | Decidido | Regra de geração e edição do SKU (ver PR-005) |
 | CAT-DEC-018 | Estoque controlado por unidade comercial vendável (unidade, par ou conjunto), sem conversão automática entre elas. | Decidido | — |
 | CAT-DEC-019 | Kit composto: quantidade fixa de cada peça; disponibilidade = menor valor, entre as peças, de ⌊estoque vendável da peça ÷ quantidade exigida⌋, descontando reservas ativas. Kit com estoque próprio usa só o próprio saldo e não debita as peças. *(Incorpora CAT-DEC-009.)* | Decidido | — |
 | CAT-DEC-020 | Preço normal e preço promocional opcional com data de início e fim. | Decidido | Prioridade entre ofertas, limites, exibição |

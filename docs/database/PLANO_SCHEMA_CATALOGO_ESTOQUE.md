@@ -1,6 +1,14 @@
 # Plano do banco — Catálogo e Estoque (Fase 1)
 
-**Estado:** proposta aguardando aprovação · 03/11/2026
+**Estado:** aprovado e **aplicado** em 03/11/2026 no projeto `ar-acessorios-dev` (escolhas da §6 viraram CAT-DEC-017, 022, 023 e 024).
+
+| Arquivo | Conteúdo |
+|---|---|
+| `supabase/migrations/20261103080000_catalogo_estoque_tabelas.sql` | Tabelas, regras e gatilhos |
+| `supabase/migrations/20261103080100_catalogo_estoque_funcoes.sql` | Disponibilidade, painel e funções de estoque |
+| `supabase/migrations/20261103080200_catalogo_estoque_acesso.sql` | RLS, permissões e fotos no Storage |
+| `supabase/seed.sql` | Catálogo de demonstração (gerado por `node scripts/gerar-seed.ts`) |
+| `supabase/tests/catalogo_estoque.sql` | Testes da §8, em transação desfeita no fim |
 **Base:** Módulo 01 e decisões D-011, D-018, CAT-DEC-001 a 021.
 **Fora deste plano:** pedidos, pagamentos, reserva de estoque no checkout (Fase 3). As tabelas já aceitam esses movimentos, mas nenhuma regra deles é implementada agora.
 
@@ -48,9 +56,9 @@ O painel **nunca** grava saldo direto. Toda mudança passa por uma função no b
 
 | Função | Faz | Decisão |
 |---|---|---|
-| `registrar_entrada(sku, quantidade, motivo)` | Soma ao saldo | CAT-DEC-012 |
-| `registrar_ajuste(sku, diferença, motivo)` | Soma ou subtrai; recusa se ficar negativo | CAT-DEC-012 |
-| `registrar_contagem(sku, contado, motivo)` | Iguala o saldo ao contado e registra a diferença | CAT-DEC-021 |
+| `registrar_entrada(variação, quantidade, motivo)` | Soma ao saldo | CAT-DEC-012 |
+| `registrar_ajuste(variação, diferença, motivo)` | Soma ou subtrai; recusa se ficar negativo | CAT-DEC-012 |
+| `registrar_contagem(variação, contado, motivo)` | Iguala o saldo ao contado e registra a diferença | CAT-DEC-021 |
 
 Duas pessoas ajustando o mesmo SKU ao mesmo tempo: a segunda espera a primeira terminar e recalcula. O saldo nunca fica negativo.
 
