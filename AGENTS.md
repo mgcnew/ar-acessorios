@@ -21,6 +21,13 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 ## Fase atual
 **Fase 1 — Fundação** (autorizada em 03/11/2026). Autorizado: site em Next.js com dados fictícios; projeto Supabase com banco, login do painel e schema de catálogo e estoque (Módulo 01). **Não autorizado:** pagamento real, deploy de produção.
 
+## Estado atual (03/11/2026)
+- Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
+- Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
+- O site **ainda usa o catálogo fictício de `src/data/catalog.ts`**. Próximo passo: vitrine lendo do banco; depois login e painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
+- Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`.
+- Regras que a interface deve respeitar: o visitante vê só disponível sim/não, nunca quantidade (CAT-DEC-024); kit composto não tem saldo próprio (CAT-DEC-019).
+
 ## Estrutura
 - `src/app/` — rotas do Next.js. `(loja)/` agrupa as páginas da vitrine; `admin/` é o painel.
 - `src/views/` — conteúdo de cada página (não use `src/pages/`: o Next.js reserva esse nome).
