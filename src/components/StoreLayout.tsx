@@ -139,6 +139,9 @@ export function StoreLayout() {
                 <li>
                   <button onClick={() => navigate('/sacola')}>Sacola</button>
                 </li>
+                <li>
+                  <button onClick={() => navigate('/admin')}>Painel da loja (demonstração)</button>
+                </li>
               </ul>
             </div>
             <div>
