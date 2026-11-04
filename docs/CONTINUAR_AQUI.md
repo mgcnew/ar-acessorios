@@ -1,6 +1,6 @@
 # Continuar aqui
 
-**Última atualização:** 03/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
+**Última atualização:** 04/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
 
 ## Onde paramos
 
@@ -9,7 +9,7 @@
 | Documentação e decisões | Consolidadas em `docs/DECISOES.md` (fonte única) |
 | Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 3 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **32 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
-| Vitrine (Next.js) | Lê do banco e **está no ar na Vercel** (prévia), funcionando com o banco de desenvolvimento |
+| Vitrine (Next.js) | Lê do banco e **está no ar na Vercel** (prévia). **Testada no navegador contra o banco real em 04/11** (Passo 2 abaixo, tudo conferido) |
 | Login do painel | **Escrito, ainda não testado com o login real**: `/admin/entrar`, proteção no servidor (`src/proxy.ts` + `is_admin()` em `/admin`), "Acesso não autorizado" e botão Sair |
 | Painel `/admin` | Aba **Estoque** real (entrada, ajuste, contagem, histórico) e aviso de estoque baixo real na visão geral. Produtos, pedidos e permissões continuam demonstração (`src/admin/seed.ts`). **Testado com banco simulado; falta testar com o banco real** |
 | Pagamento, frete, pedidos | Fora da fase atual |
@@ -30,7 +30,13 @@ Confira se a rede chega ao banco. Tem que responder `200`; `000` ou erro 403 sig
 curl -s -o /dev/null -w "%{http_code}\n" "https://pmhipriryqsblhonysay.supabase.co/rest/v1/categories?select=slug" -H "apikey: $(grep PUBLISHABLE .env.local | cut -d= -f2)"
 ```
 
-## Passo 2 — Testar a vitrine contra o banco
+**Armadilha nas sessões na nuvem:** o `curl` usa o proxy do ambiente sozinho, mas o Node não. Se o `curl` der 200 e o site der erro 500 com `fetch failed`, suba o servidor assim:
+
+```bash
+NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt npm run start
+```
+
+## ~~Passo 2 — Testar a vitrine contra o banco~~ (feito em 04/11/2026)
 
 ```bash
 npm run build && npm run start
@@ -38,14 +44,16 @@ npm run build && npm run start
 
 Conferir em http://localhost:3000, no computador e no celular (390 px):
 
-- [ ] Início mostra categorias, Lançamentos, Mais vendidos e os 3 kits
-- [ ] `/loja` lista 19 peças; `/loja/brincos` filtra; busca e ordenação funcionam
-- [ ] Brinco Argola Lunar mostra preço promocional só até 15/11/2026 (depois disso, preço normal)
-- [ ] Variação esgotada aparece riscada e não vai para a sacola (ex.: Argola Lunar Ródio G)
-- [ ] Conjunto Noite Estrelada aparece **esgotado** (a pulseira da composição está zerada)
-- [ ] Página de kit composto mostra "O que vem no conjunto" **sem nenhuma quantidade** (CAT-DEC-024)
-- [ ] Sacola e favoritos continuam funcionando e persistem ao recarregar
-- [ ] Nenhum erro no console do navegador
+- [x] Início mostra categorias, Lançamentos, Mais vendidos e os 3 kits
+- [x] `/loja` lista 19 peças; `/loja/brincos` filtra; busca e ordenação funcionam
+- [x] Brinco Argola Lunar mostra preço promocional só até 15/11/2026 (depois disso, preço normal)
+- [x] Variação esgotada aparece riscada e não vai para a sacola (ex.: Argola Lunar Ródio G)
+- [x] Conjunto Noite Estrelada aparece **esgotado** (a pulseira da composição está zerada)
+- [x] Página de kit composto mostra "O que vem no conjunto" **sem nenhuma quantidade** (CAT-DEC-024)
+- [x] Sacola e favoritos continuam funcionando e persistem ao recarregar
+- [x] Nenhum erro no console do navegador
+
+Resultado em 04/11: 6 categorias, 4 lançamentos, 4 mais vendidos e 3 kits na home; 19 peças em `/loja` e 6 em `/loja/brincos`; busca "perola" acha 4; Argola Lunar a R$ 69,90 (de R$ 89,90); Argola Lunar Ródio G e Noite Estrelada esgotados e com compra bloqueada; Conjunto Aurora lista "1 par" e "1 un." sem estoque; sacola persiste ao recarregar; 390 px sem rolagem lateral; zero erros no console. Falta só o olhar do responsável sobre o visual.
 
 Se algo falhar, a leitura está em `src/data/loja.ts`.
 
